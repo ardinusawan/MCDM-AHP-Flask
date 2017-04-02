@@ -12,7 +12,9 @@ def hello():
 @app.route("/container/list")
 def container_list():
     list = client.containers.list()
-    return jsonify("this is list of container")
+    print(dir(list[0]))
+    print(list[0].attrs)
+    return jsonify(list[0].attrs)
 
 if __name__ == "__main__":
     # app.debug = True
