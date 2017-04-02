@@ -1,0 +1,1 @@
+a:4:{s:18:"confirmstartheader";s:10:"Timed quiz";s:12:"confirmstart";s:174:"The quiz has a time limit of {$a}. Time will count down from the moment you start your attempt and you must submit before it expires. Are you sure that you wish to start now?";s:10:"pluginname";s:27:"Time limit quiz access rule";s:13:"quiztimelimit";s:16:"Time limit: {$a}";}

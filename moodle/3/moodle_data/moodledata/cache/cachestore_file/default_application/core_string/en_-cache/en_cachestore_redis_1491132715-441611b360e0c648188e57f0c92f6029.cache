@@ -1,0 +1,3 @@
+a:8:{s:10:"pluginname";s:5:"Redis";s:6:"prefix";s:10:"Key prefix";s:11:"prefix_help";s:224:"This prefix is used for all key names on the Redis server.
+* If you only have one Moodle instance using this server, you can leave this value default.
+* Due to key length restrictions, a maximum of 5 characters is permitted.";s:13:"prefixinvalid";s:47:"Invalid prefix. You can only use a-z A-Z 0-9-_.";s:11:"test_server";s:11:"Test server";s:16:"test_server_desc";s:32:"Redis server to use for testing.";s:6:"server";s:6:"Server";s:11:"server_help";s:64:"This sets the hostname or IP address of the Redis server to use.";}
