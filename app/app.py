@@ -2,9 +2,34 @@ from flask import Flask
 import docker
 from flask import jsonify
 import logging
+import datetime
 
 app = Flask(__name__)
 client = docker.from_env()
+
+delay = 10 #minute
+
+def get_Time_Percentage(con):
+    conName = con.name
+    timepercentage = 0.0
+
+    # Check if the container is running
+    if (con.status != 'running'):
+        raise ValueError('"%s" container is not running' % conName)
+
+    now = datetime.datetime.now()
+    difference = now - datetime.timedelta(minutes=delay)
+    difference = int(difference.strftime('%s'))
+    con_logs = con.logs(stream=False, timestamps=1, since=difference)
+    return con_logs
+    # # Get Memory Usage in percentage
+    # constat = con.stats(stream=False)
+    # usage = constat['memory_stats']['usage']
+    # limit = constat['memory_stats']['limit']
+    # usage_mb = usage / (1024 * 1024)
+    # limit_mb = limit / (1024 * 1024)
+    # memorypercentage = usage_mb / limit_mb * 100
+    # return memorypercentage
 
 def get_Memory_Percentage(con):
     conName = con.name
@@ -74,13 +99,16 @@ def hello():
 def container_list():
     list = client.containers.list()
     print(dir(list[0]))
-    con = client.containers.get("c81912cb33fb")
+    con = client.containers.get("d63f183d36f1")
 
     con_perc = get_CPU_Percentage(con)
     mem_perc = get_Memory_Percentage(con)
     con_stats = con.stats(stream=False)
+    con_log = get_Time_Percentage(con)
 
-    return jsonify(con_stats)
+
+    print(con_log)
+    return (con_log)
 
 if __name__ == "__main__":
     # app.debug = True
