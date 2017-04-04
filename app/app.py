@@ -3,11 +3,18 @@ import docker
 from flask import jsonify
 import logging
 import datetime
+import pytz
+
+local_tz = pytz.timezone('Asia/Jakarta')
 
 app = Flask(__name__)
 client = docker.from_env()
 
-delay = 10 #minute
+delay =60 #minute
+
+def utc_to_local(utc_dt):
+    local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
+    return local_tz.normalize(local_dt) # .normalize might be unnecessary
 
 def get_Time_Percentage(con):
     conName = con.name
@@ -20,8 +27,18 @@ def get_Time_Percentage(con):
     now = datetime.datetime.now()
     difference = now - datetime.timedelta(minutes=delay)
     difference = int(difference.strftime('%s'))
-    con_logs = con.logs(stream=False, timestamps=1, since=difference)
-    return con_logs
+    con_log = con.logs(stream=False, timestamps=1, since=difference)
+    if b'200' in con_log:
+        last_hit_start = int(str(con_log).rfind('[')) + 1
+        last_hit_end = int(str(con_log).rfind(']'))
+
+        date_last_access = str(con_log)[last_hit_start:last_hit_end]
+        date_last_access = datetime.datetime.strptime(date_last_access, '%d/%b/%Y:%H:%M:%S %z')
+        date_last_access = utc_to_local(date_last_access)
+        print(date_last_access)
+    else:
+        con_log = "No access data"
+    return con_log
     # # Get Memory Usage in percentage
     # constat = con.stats(stream=False)
     # usage = constat['memory_stats']['usage']
@@ -98,8 +115,11 @@ def hello():
 @app.route("/container/list")
 def container_list():
     list = client.containers.list()
-    print(dir(list[0]))
-    con = client.containers.get("d63f183d36f1")
+    # print(dir(list[0]))
+    for c in list:
+        if "moodle" in c.name:
+            print("Container Name:",c.name)
+            con = client.containers.get(c.short_id)
 
     con_perc = get_CPU_Percentage(con)
     mem_perc = get_Memory_Percentage(con)
@@ -107,7 +127,6 @@ def container_list():
     con_log = get_Time_Percentage(con)
 
 
-    print(con_log)
     return (con_log)
 
 if __name__ == "__main__":
