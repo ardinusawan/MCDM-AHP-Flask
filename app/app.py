@@ -25,9 +25,9 @@ def get_Time_Percentage(con):
         raise ValueError('"%s" container is not running' % conName)
 
     now = datetime.datetime.now()
-    difference = now - datetime.timedelta(minutes=delay)
-    difference = int(difference.strftime('%s'))
-    con_log = con.logs(stream=False, timestamps=1, since=difference)
+    date_crawler = now - datetime.timedelta(minutes=delay)
+    date_crawler = int(date_crawler.strftime('%s'))
+    con_log = con.logs(stream=False, timestamps=1, since=date_crawler)
     if b'200' in con_log:
         last_hit_start = int(str(con_log).rfind('[')) + 1
         last_hit_end = int(str(con_log).rfind(']'))
@@ -35,9 +35,17 @@ def get_Time_Percentage(con):
         date_last_access = str(con_log)[last_hit_start:last_hit_end]
         date_last_access = datetime.datetime.strptime(date_last_access, '%d/%b/%Y:%H:%M:%S %z')
         date_last_access = utc_to_local(date_last_access)
-        print(date_last_access)
+        date_now = datetime.datetime.utcnow()
+        date_now.replace(tzinfo=pytz.utc).astimezone(local_tz)
+        date_now = utc_to_local(date_now)
+        difference_date = date_now - date_last_access
+        difference_date = difference_date.total_seconds()
+        day = 86400 # seconds
+
+        # con_log = (difference_date/day) * 100
+        print(difference_date/day * 100)
     else:
-        con_log = "No access data"
+        con_log = "No Data"
     return con_log
     # # Get Memory Usage in percentage
     # constat = con.stats(stream=False)
@@ -116,16 +124,19 @@ def hello():
 def container_list():
     list = client.containers.list()
     # print(dir(list[0]))
+    con_log = ''
     for c in list:
         if "moodle" in c.name:
             print("Container Name:",c.name)
             con = client.containers.get(c.short_id)
 
-    con_perc = get_CPU_Percentage(con)
-    mem_perc = get_Memory_Percentage(con)
-    con_stats = con.stats(stream=False)
-    con_log = get_Time_Percentage(con)
-
+            con_perc = get_CPU_Percentage(con)
+            mem_perc = get_Memory_Percentage(con)
+            con_stats = con.stats(stream=False)
+            con_log = get_Time_Percentage(con)
+            return con_log
+        else:
+            con_log = jsonify("No container moodle")
 
     return (con_log)
 
