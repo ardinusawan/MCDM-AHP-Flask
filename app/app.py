@@ -30,7 +30,8 @@ def utc_to_local(utc_dt):
     local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
     return local_tz.normalize(local_dt) # .normalize might be unnecessary
 
-def get_Time_Percentage(con):
+#LTA: last time access
+def get_LTA_Data(con):
     conName = con.name
     timepercentage = 0.0
 
@@ -42,6 +43,7 @@ def get_Time_Percentage(con):
     date_crawler = now - datetime.timedelta(minutes=delay)
     date_crawler = int(date_crawler.strftime('%s'))
     con_log = con.logs(stream=False, timestamps=1, since=date_crawler)
+    # con_log_all = con.logs(stream=False, timestamps=1)
     if b'200' in con_log:
         last_hit_start = int(str(con_log).rfind('[')) + 1
         last_hit_end = int(str(con_log).rfind(']'))
@@ -49,6 +51,7 @@ def get_Time_Percentage(con):
         date_last_access = str(con_log)[last_hit_start:last_hit_end]
         date_last_access = datetime.datetime.strptime(date_last_access, '%d/%b/%Y:%H:%M:%S %z')
         date_last_access = utc_to_local(date_last_access)
+        temp_date = date_last_access
         date_now = datetime.datetime.utcnow()
         date_now.replace(tzinfo=pytz.utc).astimezone(local_tz)
         date_now = utc_to_local(date_now)
@@ -58,16 +61,15 @@ def get_Time_Percentage(con):
 
         # con_log = (difference_date/day) * 100
         timepercentage = difference_date/day * 100
-        print(timepercentage)
     else:
         con_log = "No Data"
 
     if timepercentage is not 0:
-        return str(timepercentage)
+        return timepercentage, date_last_access
     else:
         return con_log
 
-def get_Memory_Percentage(con):
+def get_Memory_Data(con):
     conName = con.name
     memorypercentage = 0.0
 
@@ -82,7 +84,7 @@ def get_Memory_Percentage(con):
     usage_mb = usage/(1024*1024)
     limit_mb = limit/(1024*1024)
     memorypercentage = usage_mb/limit_mb * 100
-    return memorypercentage
+    return memorypercentage, usage_mb
 
 def get_CPU_Percentage(con):
     conName = con.name
@@ -125,35 +127,47 @@ def get_CPU_Percentage(con):
 
     logging.info('"%s" Container CPU: %s ' % (conName, formattedcpupert))
 
+    # try:
+    #     cur = get_db().cursor()
+    #     cur.execute("INSERT INTO containers (name,addr,city,pin)
+    #     VALUES(?, ?, ?, ?)",(nm,addr,city,pin) )
+    #
+    #     con.commit()
+    #     msg = "Record successfully added"
+    # except:
+    #     con.rollback()
+    #     msg = "error in insert operation"
+
     return (cpupercentage * 100)
 
 # create table if not exist
 def create_table():
     with app.app_context():
-        conn = get_db().cursor()
+        cur = get_db().cursor()
         containers = """
         CREATE TABLE IF NOT EXISTS containers (
-            id INT AUTO INCREMENT PRIMARY KEY,
-            container_id TEXT, 
+            container_id TEXT PRIMARY KEY, 
             name TEXT,
             status TEXT)
         """
-        conn.execute(containers)
+        cur.execute(containers)
         print("Table %s is exist / created successfully" % "containers")
 
         stats = """
         CREATE TABLE IF NOT EXISTS stats (
             id INT AUTO INCREMENT PRIMARY KEY,
             container_id TEXT,
-            cpu TEXT,
-            memory TEXT,
+            cpu REAL,
+            memory REAL,
+            memory_percentage REAL,
             last_time_access DATETIME,
+            last_time_access_percentage REAL,
             FOREIGN KEY(container_id) REFERENCES containers(container_id))
         """
-        conn.execute(stats)
+        cur.execute(stats)
         print("Table %s is exist / created successfully" % "stats")
 
-        conn.close()
+        cur.close()
 
 @app.route("/")
 def hello():
@@ -182,20 +196,22 @@ def stats():
             print("Container Name:",c.name)
             con = client.containers.get(c.short_id)
 
-            con_perc = get_CPU_Percentage(con)
-            mem_perc = get_Memory_Percentage(con)
-            con_stats = con.stats(stream=False)
-            con_log = get_Time_Percentage(con)
-            print(con_log)
-            return con_log
+            cpu_percentage = get_CPU_Percentage(con)
+            memory_percentage, memory_mb = get_Memory_Data(con)
+            LTA_percentage, LTA_datetime = get_LTA_Data(con)
+            print(cpu_percentage)
+            print(memory_percentage, memory_mb)
+            print(LTA_percentage, LTA_datetime)
+            return LTA_percentage
         else:
             con_log = jsonify("No container moodle")
 
+#schedule to write stats to DB
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     func=stats,
-    trigger=IntervalTrigger(seconds=5),#5 minute
+    trigger=IntervalTrigger(minutes=0.1),#10 minute
     id='printing_job',
     name='Print date and time every five seconds',
     replace_existing=True)
