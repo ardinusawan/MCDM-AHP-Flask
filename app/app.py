@@ -6,8 +6,10 @@ import datetime
 import pytz
 import sqlite3
 from flask import g
-import schedule
 import time
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 
 DATABASE = './database.db'
 
@@ -127,31 +129,31 @@ def get_CPU_Percentage(con):
 
 # create table if not exist
 def create_table():
-    conn = get_db().cursor()
-    containers = """
-    CREATE TABLE IF NOT EXISTS containers (
-        id INT AUTO INCREMENT PRIMARY KEY,
-        container_id TEXT, 
-        name TEXT,
-        status TEXT)
-    """
-    conn.execute(containers)
-    print("Table %s created successfully" % "containers")
+    with app.app_context():
+        conn = get_db().cursor()
+        containers = """
+        CREATE TABLE IF NOT EXISTS containers (
+            id INT AUTO INCREMENT PRIMARY KEY,
+            container_id TEXT, 
+            name TEXT,
+            status TEXT)
+        """
+        conn.execute(containers)
+        print("Table %s is exist / created successfully" % "containers")
 
-    stats = """
-    CREATE TABLE IF NOT EXISTS stats (
-        id INT AUTO INCREMENT PRIMARY KEY,
-        container_id TEXT,
-        cpu TEXT,
-        memory TEXT,
-        last_time_access DATETIME,
-        FOREIGN KEY(container_id) REFERENCES containers(container_id))
-    """
-    conn.execute(stats)
-    print("Table %s created successfully" % "stats")
+        stats = """
+        CREATE TABLE IF NOT EXISTS stats (
+            id INT AUTO INCREMENT PRIMARY KEY,
+            container_id TEXT,
+            cpu TEXT,
+            memory TEXT,
+            last_time_access DATETIME,
+            FOREIGN KEY(container_id) REFERENCES containers(container_id))
+        """
+        conn.execute(stats)
+        print("Table %s is exist / created successfully" % "stats")
 
-
-    conn.close()
+        conn.close()
 
 @app.route("/")
 def hello():
@@ -159,10 +161,22 @@ def hello():
 
 @app.route("/container/list")
 def container_list():
-    create_table()
-    list = client.containers.list()
     # print(dir(list[0]))
     con_log = ''
+
+
+    return (con_log)
+
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+def stats():
+    create_table()
+    list = client.containers.list()
     for c in list:
         if "moodle" in c.name:
             print("Container Name:",c.name)
@@ -172,19 +186,22 @@ def container_list():
             mem_perc = get_Memory_Percentage(con)
             con_stats = con.stats(stream=False)
             con_log = get_Time_Percentage(con)
+            print(con_log)
             return con_log
         else:
             con_log = jsonify("No container moodle")
 
-    return (con_log)
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+scheduler = BackgroundScheduler()
+scheduler.start()
+scheduler.add_job(
+    func=stats,
+    trigger=IntervalTrigger(seconds=5),#5 minute
+    id='printing_job',
+    name='Print date and time every five seconds',
+    replace_existing=True)
+# Shut down the scheduler when exiting the app
+atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
     # app.debug = True
-
     app.run()
