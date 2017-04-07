@@ -43,18 +43,15 @@ def get_Time_Percentage(con):
         day = 86400 # seconds
 
         # con_log = (difference_date/day) * 100
-        print(difference_date/day * 100)
+        timepercentage = difference_date/day * 100
+        print(timepercentage)
     else:
         con_log = "No Data"
-    return con_log
-    # # Get Memory Usage in percentage
-    # constat = con.stats(stream=False)
-    # usage = constat['memory_stats']['usage']
-    # limit = constat['memory_stats']['limit']
-    # usage_mb = usage / (1024 * 1024)
-    # limit_mb = limit / (1024 * 1024)
-    # memorypercentage = usage_mb / limit_mb * 100
-    # return memorypercentage
+
+    if timepercentage is not 0:
+        return str(timepercentage)
+    else:
+        return con_log
 
 def get_Memory_Percentage(con):
     conName = con.name
