@@ -4,6 +4,12 @@ from flask import jsonify
 import logging
 import datetime
 import pytz
+import sqlite3
+from flask import g
+import schedule
+import time
+
+DATABASE = './database.db'
 
 local_tz = pytz.timezone('Asia/Jakarta')
 
@@ -11,6 +17,12 @@ app = Flask(__name__)
 client = docker.from_env()
 
 delay =60 #minute
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
 
 def utc_to_local(utc_dt):
     local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
@@ -113,12 +125,41 @@ def get_CPU_Percentage(con):
 
     return (cpupercentage * 100)
 
+# create table if not exist
+def create_table():
+    conn = get_db().cursor()
+    containers = """
+    CREATE TABLE IF NOT EXISTS containers (
+        id INT AUTO INCREMENT PRIMARY KEY,
+        container_id TEXT, 
+        name TEXT,
+        status TEXT)
+    """
+    conn.execute(containers)
+    print("Table %s created successfully" % "containers")
+
+    stats = """
+    CREATE TABLE IF NOT EXISTS stats (
+        id INT AUTO INCREMENT PRIMARY KEY,
+        container_id TEXT,
+        cpu TEXT,
+        memory TEXT,
+        last_time_access DATETIME,
+        FOREIGN KEY(container_id) REFERENCES containers(container_id))
+    """
+    conn.execute(stats)
+    print("Table %s created successfully" % "stats")
+
+
+    conn.close()
+
 @app.route("/")
 def hello():
     return "Hello World!"
 
 @app.route("/container/list")
 def container_list():
+    create_table()
     list = client.containers.list()
     # print(dir(list[0]))
     con_log = ''
@@ -137,6 +178,13 @@ def container_list():
 
     return (con_log)
 
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
 if __name__ == "__main__":
     # app.debug = True
+
     app.run()
