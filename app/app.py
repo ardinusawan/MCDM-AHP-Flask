@@ -10,6 +10,10 @@ import time
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+import sys
+
+delay =60 #minute
+get_stats = 0.1 # minutes
 
 DATABASE = './database.db'
 
@@ -17,8 +21,6 @@ local_tz = pytz.timezone('Asia/Jakarta')
 
 app = Flask(__name__)
 client = docker.from_env()
-
-delay =60 #minute
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -148,7 +150,8 @@ def create_table():
         CREATE TABLE IF NOT EXISTS containers (
             container_id TEXT PRIMARY KEY, 
             name TEXT,
-            status TEXT)
+            status TEXT,
+            timestamps DATETIME)
         """
         cur.execute(containers)
         print("Table %s is exist / created successfully" % "containers")
@@ -162,12 +165,73 @@ def create_table():
             memory_percentage REAL,
             last_time_access DATETIME,
             last_time_access_percentage REAL,
+            timestamps  DATETIME,
             FOREIGN KEY(container_id) REFERENCES containers(container_id))
         """
         cur.execute(stats)
         print("Table %s is exist / created successfully" % "stats")
 
         cur.close()
+def query_db(query, args=(), one=False):
+    with app.app_context():
+        cur = get_db().execute(query, args)
+        rv = cur.fetchall()
+        cur.close()
+        return (rv[0] if rv else None) if one else rv
+
+def insert_containers(container_id, name, status):
+    with app.app_context():
+        cur = get_db().cursor()
+        con = get_db()
+        now = datetime.datetime.now()
+        # now = utc_to_local(now)
+        try:
+            status = cur.execute("REPLACE INTO containers (container_id, name, status, timestamps) values (?,?,?,?)", (container_id, name, status, now))
+            con.commit()
+        except:
+            con.rollback()
+            status = sys.exc_info()
+        finally:
+            return status
+
+def insert_stats(container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage):
+    with app.app_context():
+        cur = get_db().cursor()
+        con = get_db()
+        now = datetime.datetime.now()
+        # now = utc_to_local(now)
+        try:
+            status = cur.execute("INSERT INTO stats (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps) values (?,?,?,?,?,?,?)", (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, now))
+            con.commit()
+        except:
+            con.rollback()
+            status = sys.exc_info()
+        finally:
+            return status
+
+def stats():
+    create_table()
+    list = client.containers.list()
+    for c in list:
+        if "moodle" in c.name:
+            print("Container Name:",c.name)
+            con = client.containers.get(c.short_id)
+            cpu_percentage = get_CPU_Percentage(con)
+            memory_percentage, memory_mb = get_Memory_Data(con)
+            LTA_percentage, LTA_datetime = get_LTA_Data(con)
+            # print(cpu_percentage)
+            # print(memory_percentage, memory_mb)
+            # print(LTA_percentage, LTA_datetime)
+
+            data_container = {"container_id":con.short_id, "name":con.name, "status":con.status}
+            data_stats = {"container_id":con.short_id, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage}
+
+            status = insert_containers(**data_container)
+            print(status)
+            status1 = insert_stats(**data_stats)
+            print(status1)
+            # print(data_container,data_stats)
+    return True
 
 @app.route("/")
 def hello():
@@ -188,30 +252,13 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-def stats():
-    create_table()
-    list = client.containers.list()
-    for c in list:
-        if "moodle" in c.name:
-            print("Container Name:",c.name)
-            con = client.containers.get(c.short_id)
-
-            cpu_percentage = get_CPU_Percentage(con)
-            memory_percentage, memory_mb = get_Memory_Data(con)
-            LTA_percentage, LTA_datetime = get_LTA_Data(con)
-            print(cpu_percentage)
-            print(memory_percentage, memory_mb)
-            print(LTA_percentage, LTA_datetime)
-            return LTA_percentage
-        else:
-            con_log = jsonify("No container moodle")
 
 #schedule to write stats to DB
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     func=stats,
-    trigger=IntervalTrigger(minutes=0.1),#10 minute
+    trigger=IntervalTrigger(minutes=get_stats),#10 minute
     id='printing_job',
     name='Print date and time every five seconds',
     replace_existing=True)
