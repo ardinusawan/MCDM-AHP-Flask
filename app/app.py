@@ -159,7 +159,7 @@ def create_table():
 
         stats = """
         CREATE TABLE IF NOT EXISTS stats (
-            id INT AUTO INCREMENT PRIMARY KEY,
+            id INTEGER AUTO INCREMENT PRIMARY KEY,
             container_id TEXT,
             cpu REAL,
             memory REAL,
