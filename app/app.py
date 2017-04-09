@@ -13,7 +13,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 import sys
 
 delay =60 #minute
-get_stats = 0.1 # minutes
+get_stats = 10 # minutes
 
 DATABASE = './database.db'
 
@@ -36,6 +36,7 @@ def utc_to_local(utc_dt):
 def get_LTA_Data(con):
     conName = con.name
     timepercentage = 0.0
+    date_last_access = datetime.datetime.min
 
     # Check if the container is running
     if (con.status != 'running'):
