@@ -3,6 +3,9 @@ import logging
 import pytz
 import datetime
 import db as DB
+from flask import Flask
+
+app = Flask(__name__)
 
 delay = 60 #minute
 
@@ -48,7 +51,7 @@ def get_LTA_Data(con):
         con_log = "No Data"
 
     if timepercentage is not 0:
-        return timepercentage, date_last_access
+        return timepercentage, date_last_access.replace(tzinfo=None)
     else:
         return con_log
 
@@ -112,26 +115,27 @@ def get_CPU_Percentage(con):
     return (cpupercentage * 100)
 
 def stats():
-    DB.create_table()
-    list = client.containers.list()
-    if not list:
-        return False
+    with app.app_context():
+        DB.create_table()
+        list = client.containers.list()
+        if not list:
+            return False
 
-    now = datetime.datetime.now()
-    for c in list:
-        if "moodle" in c.name:
-            print("Container Name:",c.name)
-            con = client.containers.get(c.short_id)
-            cpu_percentage = get_CPU_Percentage(con)
-            memory_percentage, memory_mb = get_Memory_Data(con)
-            LTA_percentage, LTA_datetime = get_LTA_Data(con)
-            # print(cpu_percentage)
-            # print(memory_percentage, memory_mb)
-            # print(LTA_percentage, LTA_datetime)
+        now = datetime.datetime.now()
+        for c in list:
+            if "moodle" in c.name:
+                print("Container Name:",c.name)
+                con = client.containers.get(c.short_id)
+                cpu_percentage = get_CPU_Percentage(con)
+                memory_percentage, memory_mb = get_Memory_Data(con)
+                LTA_percentage, LTA_datetime = get_LTA_Data(con)
+                # print(cpu_percentage)
+                # print(memory_percentage, memory_mb)
+                # print(LTA_percentage, LTA_datetime)
 
-            data_container = {"container_id":con.short_id, "name":con.name, "status":con.status}
-            data_stats = {"container_id":con.short_id, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
-            DB.insert_containers(**data_container)
-            DB.insert_stats(**data_stats)
+                data_container = {"container_id":con.short_id, "name":con.name, "status":con.status}
+                data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
+                DB.insert_containers(**data_container)
+                DB.insert_stats(**data_stats)
 
-    return True
+        return True

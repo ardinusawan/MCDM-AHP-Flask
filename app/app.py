@@ -5,10 +5,15 @@ import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import utils as UTILS
+import threading
 
 app = Flask(__name__)
 
-get_stats = 10 # minutes
+get_stats = 0.2 # minutes
+
+# def get_stats():
+#     threading.Timer(5.0, UTILS.stats).start()  # called every minute
+# get_stats()
 
 @app.route("/")
 def hello():

@@ -1,95 +1,81 @@
-import sqlite3
+# import sqlite3
+import MySQLdb
 import datetime
 from flask import g
 import sys
 from flask import Flask
-
-
-DATABASE = './database.db'
-
 app = Flask(__name__)
 
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
 
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+db = MySQLdb.connect("localhost","root","Asddsaa1","MCDM-AHP" )
 
 # create table if not exist
 def create_table():
-    cur = get_db().cursor()
-    containers = """
-    CREATE TABLE IF NOT EXISTS containers (
-        container_id TEXT PRIMARY KEY, 
-        name TEXT,
-        status TEXT,
-        timestamps DATETIME)
-    """
-    cur.execute(containers)
-    print("Table %s is exist / created successfully" % "containers")
+    with app.app_context():
+        cursor = db.cursor()
+        containers = """
+        CREATE TABLE IF NOT EXISTS containers (
+            container_id VARCHAR(255) PRIMARY KEY, 
+            name VARCHAR(255),
+            status VARCHAR(255),
+            timestamps DATETIME)
+        """
+        status = cursor.execute("SHOW TABLES LIKE 'containers'")
+        if status == 0:
+            cursor.execute(containers)
+        # else:
+            # print("Tabel containers sudah ada, skip..")
 
-    stats = """
-    CREATE TABLE IF NOT EXISTS stats (
-        id INTEGER PRIMARY KEY AUTOINCREMENT ,
-        container_id TEXT,
-        cpu REAL,
-        memory REAL,
-        memory_percentage REAL,
-        last_time_access DATETIME,
-        last_time_access_percentage REAL,
-        timestamps  DATETIME,
-        FOREIGN KEY(container_id) REFERENCES containers(container_id))
-    """
-    cur.execute(stats)
-    print("Table %s is exist / created successfully" % "stats")
-
-    cur.close()
-
-
-def query_db(query, args=(), one=False):
-    # with app.app_context():
-    cur = get_db().execute(query, args)
-    rv = cur.fetchall()
-    cur.close()
-    return (rv[0] if rv else None) if one else rv
-
+        cursor = db.cursor()
+        stats = """
+        CREATE TABLE IF NOT EXISTS stats (
+            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            container_id VARCHAR(255),
+            container_name VARCHAR(255),
+            cpu INT,
+            memory FLOAT,
+            memory_percentage FLOAT,
+            last_time_access DATETIME,
+            last_time_access_percentage FLOAT,
+            timestamps DATETIME,
+            FOREIGN KEY(container_id) REFERENCES containers(container_id) ON DELETE NO ACTION ON UPDATE NO ACTION)
+        """
+        status = cursor.execute("SHOW TABLES LIKE 'stats'")
+        if status == 0:
+            cursor.execute(stats)
+        # else:
+            # print("Tabel stats sudah ada, skip..")
 
 def insert_containers(container_id, name, status):
-    # with app.app_context():
-    cur = get_db().cursor()
-    con = get_db()
+    cursor = db.cursor()
     now = datetime.datetime.now()
-    # now = utc_to_local(now)
+    sql = "SELECT container_id FROM containers WHERE container_id = '%s'" % (container_id)
+    msg = cursor.execute(sql)
+    if msg == 0:
+        sql = "INSERT INTO containers (container_id, name, status, timestamps) VALUES ('%s','%s','%s','%s')" % \
+                             (container_id, name, status, now)
+    elif msg == 1:
+        sql = "UPDATE containers SET name='%s', status='%s', timestamps='%s'" % \
+              (name, status, now)
     try:
-        status = cur.execute("REPLACE INTO containers (container_id, name, status, timestamps) values (?,?,?,?)",
-                             (container_id, name, status, now))
-        con.commit()
-        cur.close()
+        msg = cursor.execute(sql)
+        db.commit()
     except:
-        con.rollback()
-        status = sys.exc_info()
+        db.rollback()
+        msg = sys.exc_info()
     finally:
-        return status
+        return msg
 
 
-def insert_stats(container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts):
-    # with app.app_context():
-    cur = get_db().cursor()
-    con = get_db()
+def insert_stats(container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts):
+    cursor = db.cursor()
     try:
-        status = cur.execute(
-            "INSERT INTO stats (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps) values (?,?,?,?,?,?,?)",
-            (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts))
-        con.commit()
-        cur.close()
+        status = cursor.execute(
+            "INSERT INTO stats (container_id,container_name,cpu,memory, memory_percentage, last_time_access,last_time_access_percentage,timestamps) values ('%s','%s','%f','%f','%f','%s','%f','%s')" % \
+            (container_id,container_name,cpu,memory, memory_percentage, last_time_access,last_time_access_percentage,ts))
+        db.commit()
     except:
-        con.rollback()
+        db.rollback()
         status = sys.exc_info()
     finally:
         return status
