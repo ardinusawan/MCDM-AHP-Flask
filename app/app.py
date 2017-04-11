@@ -1,19 +1,13 @@
 from flask import Flask
 from flask import jsonify
-import datetime
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import utils as UTILS
-import threading
 
 app = Flask(__name__)
 
-get_stats = 0.2 # minutes
-
-# def get_stats():
-#     threading.Timer(5.0, UTILS.stats).start()  # called every minute
-# get_stats()
+get_stats = 10 # minutes
 
 @app.route("/")
 def hello():
@@ -24,19 +18,16 @@ def container_list():
     UTILS.stats()
     # print(dir(list[0]))
     con_log = ''
-
-
     return (con_log)
-
 
 #schedule to write stats to DB
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     func=UTILS.stats,
-    trigger=IntervalTrigger(minutes=get_stats),#10 minute
-    id='printing_job',
-    name='Print date and time every five seconds',
+    trigger=IntervalTrigger(minutes=get_stats),
+    id='get_docker_stats',
+    name='Get Docker Stats every ten minutes',
     replace_existing=True)
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())

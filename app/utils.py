@@ -28,15 +28,15 @@ def get_LTA_Data(con):
         raise ValueError('"%s" container is not running' % conName)
 
     now = datetime.datetime.now()
-    date_crawler = now - datetime.timedelta(minutes=delay)
-    date_crawler = int(date_crawler.strftime('%s'))
-    con_log = con.logs(stream=False, timestamps=1, since=date_crawler)
-    # con_log_all = con.logs(stream=False, timestamps=1)
-    if b'200' in con_log:
-        last_hit_start = int(str(con_log).rfind('[')) + 1
-        last_hit_end = int(str(con_log).rfind(']'))
+    # date_crawler = now - datetime.timedelta(minutes=delay)
+    # date_crawler = int(date_crawler.strftime('%s'))
+    # con_log = con.logs(stream=False, timestamps=1, since=date_crawler)
+    con_log_all = con.logs(stream=False, timestamps=1)
+    if b'200' in con_log_all:
+        last_hit_start = int(str(con_log_all).rfind('[')) + 1
+        last_hit_end = int(str(con_log_all).rfind(']'))
 
-        date_last_access = str(con_log)[last_hit_start:last_hit_end]
+        date_last_access = str(con_log_all)[last_hit_start:last_hit_end]
         date_last_access = datetime.datetime.strptime(date_last_access, '%d/%b/%Y:%H:%M:%S %z')
         date_last_access = utc_to_local(date_last_access)
         date_now = datetime.datetime.utcnow()

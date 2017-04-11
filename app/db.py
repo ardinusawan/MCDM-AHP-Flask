@@ -1,50 +1,44 @@
-# import sqlite3
 import MySQLdb
 import datetime
-from flask import g
 import sys
-from flask import Flask
-app = Flask(__name__)
-
 
 db = MySQLdb.connect("localhost","root","Asddsaa1","MCDM-AHP" )
 
 # create table if not exist
 def create_table():
-    with app.app_context():
-        cursor = db.cursor()
-        containers = """
-        CREATE TABLE IF NOT EXISTS containers (
-            container_id VARCHAR(255) PRIMARY KEY, 
-            name VARCHAR(255),
-            status VARCHAR(255),
-            timestamps DATETIME)
-        """
-        status = cursor.execute("SHOW TABLES LIKE 'containers'")
-        if status == 0:
-            cursor.execute(containers)
-        # else:
-            # print("Tabel containers sudah ada, skip..")
+    cursor = db.cursor()
+    containers = """
+    CREATE TABLE IF NOT EXISTS containers (
+        container_id VARCHAR(255) PRIMARY KEY, 
+        name VARCHAR(255),
+        status VARCHAR(255),
+        timestamps DATETIME)
+    """
+    status = cursor.execute("SHOW TABLES LIKE 'containers'")
+    if status == 0:
+        cursor.execute(containers)
+    # else:
+        # print("Tabel containers sudah ada, skip..")
 
-        cursor = db.cursor()
-        stats = """
-        CREATE TABLE IF NOT EXISTS stats (
-            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            container_id VARCHAR(255),
-            container_name VARCHAR(255),
-            cpu INT,
-            memory FLOAT,
-            memory_percentage FLOAT,
-            last_time_access DATETIME,
-            last_time_access_percentage FLOAT,
-            timestamps DATETIME,
-            FOREIGN KEY(container_id) REFERENCES containers(container_id) ON DELETE NO ACTION ON UPDATE NO ACTION)
-        """
-        status = cursor.execute("SHOW TABLES LIKE 'stats'")
-        if status == 0:
-            cursor.execute(stats)
-        # else:
-            # print("Tabel stats sudah ada, skip..")
+    cursor = db.cursor()
+    stats = """
+    CREATE TABLE IF NOT EXISTS stats (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        container_id VARCHAR(255),
+        container_name VARCHAR(255),
+        cpu INT,
+        memory FLOAT,
+        memory_percentage FLOAT,
+        last_time_access DATETIME,
+        last_time_access_percentage FLOAT,
+        timestamps DATETIME,
+        FOREIGN KEY(container_id) REFERENCES containers(container_id) ON DELETE NO ACTION ON UPDATE NO ACTION)
+    """
+    status = cursor.execute("SHOW TABLES LIKE 'stats'")
+    if status == 0:
+        cursor.execute(stats)
+    # else:
+        # print("Tabel stats sudah ada, skip..")
 
 def insert_containers(container_id, name, status):
     cursor = db.cursor()
