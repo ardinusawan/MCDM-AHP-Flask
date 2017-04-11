@@ -4,29 +4,20 @@ from flask import jsonify
 import logging
 import datetime
 import pytz
-import sqlite3
-from flask import g
 import time
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-import sys
 
-delay =60 #minute
-get_stats = 0.6 # minutes
+import dbController as DB
 
-DATABASE = './database.db'
+delay = 60 #minute
+get_stats = 10 # minutes
 
 local_tz = pytz.timezone('Asia/Jakarta')
 
 app = Flask(__name__)
 client = docker.from_env()
-
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
 
 def utc_to_local(utc_dt):
     local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
@@ -54,7 +45,6 @@ def get_LTA_Data(con):
         date_last_access = str(con_log)[last_hit_start:last_hit_end]
         date_last_access = datetime.datetime.strptime(date_last_access, '%d/%b/%Y:%H:%M:%S %z')
         date_last_access = utc_to_local(date_last_access)
-        temp_date = date_last_access
         date_now = datetime.datetime.utcnow()
         date_now.replace(tzinfo=pytz.utc).astimezone(local_tz)
         date_now = utc_to_local(date_now)
@@ -62,7 +52,6 @@ def get_LTA_Data(con):
         difference_date = difference_date.total_seconds()
         day = 86400 # seconds
 
-        # con_log = (difference_date/day) * 100
         timepercentage = difference_date/day * 100
     else:
         con_log = "No Data"
@@ -101,7 +90,6 @@ def get_CPU_Percentage(con):
     constat = con.stats(stream=False)
     prestats = constat['precpu_stats']
     cpustats = constat['cpu_stats']
-    # print(cpustats)
 
     # cpuDelta = res.cpu_stats.cpu_usage.total_usage -  res.precpu_stats.cpu_usage.total_usage;
     # systemDelta = res.cpu_stats.system_cpu_usage - res.precpu_stats.system_cpu_usage;
@@ -130,87 +118,12 @@ def get_CPU_Percentage(con):
 
     logging.info('"%s" Container CPU: %s ' % (conName, formattedcpupert))
 
-    # try:
-    #     cur = get_db().cursor()
-    #     cur.execute("INSERT INTO containers (name,addr,city,pin)
-    #     VALUES(?, ?, ?, ?)",(nm,addr,city,pin) )
-    #
-    #     con.commit()
-    #     msg = "Record successfully added"
-    # except:
-    #     con.rollback()
-    #     msg = "error in insert operation"
-
     return (cpupercentage * 100)
 
-# create table if not exist
-def create_table():
-    with app.app_context():
-        cur = get_db().cursor()
-        containers = """
-        CREATE TABLE IF NOT EXISTS containers (
-            container_id TEXT PRIMARY KEY, 
-            name TEXT,
-            status TEXT,
-            timestamps DATETIME)
-        """
-        cur.execute(containers)
-        print("Table %s is exist / created successfully" % "containers")
 
-        stats = """
-        CREATE TABLE IF NOT EXISTS stats (
-            id INTEGER PRIMARY KEY AUTOINCREMENT ,
-            container_id TEXT,
-            cpu REAL,
-            memory REAL,
-            memory_percentage REAL,
-            last_time_access DATETIME,
-            last_time_access_percentage REAL,
-            timestamps  DATETIME,
-            FOREIGN KEY(container_id) REFERENCES containers(container_id))
-        """
-        cur.execute(stats)
-        print("Table %s is exist / created successfully" % "stats")
-
-        cur.close()
-def query_db(query, args=(), one=False):
-    with app.app_context():
-        cur = get_db().execute(query, args)
-        rv = cur.fetchall()
-        cur.close()
-        return (rv[0] if rv else None) if one else rv
-
-def insert_containers(container_id, name, status):
-    with app.app_context():
-        cur = get_db().cursor()
-        con = get_db()
-        now = datetime.datetime.now()
-        # now = utc_to_local(now)
-        try:
-            status = cur.execute("REPLACE INTO containers (container_id, name, status, timestamps) values (?,?,?,?)", (container_id, name, status, now))
-            con.commit()
-        except:
-            con.rollback()
-            status = sys.exc_info()
-        finally:
-            return status
-
-def insert_stats(container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts):
-    with app.app_context():
-        cur = get_db().cursor()
-        con = get_db()
-        # now = utc_to_local(now)
-        try:
-            status = cur.execute("INSERT INTO stats (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps) values (?,?,?,?,?,?,?)", (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts))
-            con.commit()
-        except:
-            con.rollback()
-            status = sys.exc_info()
-        finally:
-            return status
 
 def stats():
-    create_table()
+    DB.create_table()
     list = client.containers.list()
     if not list:
         return False
@@ -230,9 +143,9 @@ def stats():
             data_container = {"container_id":con.short_id, "name":con.name, "status":con.status}
             data_stats = {"container_id":con.short_id, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
 
-            status = insert_containers(**data_container)
+            status = DB.insert_containers(**data_container)
             print(status)
-            status1 = insert_stats(**data_stats)
+            status1 = DB.insert_stats(**data_stats)
             print(status1)
             # print(data_container,data_stats)
     return True
@@ -243,18 +156,12 @@ def hello():
 
 @app.route("/container/list")
 def container_list():
+    stats()
     # print(dir(list[0]))
     con_log = ''
 
 
     return (con_log)
-
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
 
 
 #schedule to write stats to DB
