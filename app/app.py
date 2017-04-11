@@ -13,7 +13,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 import sys
 
 delay =60 #minute
-get_stats = 10 # minutes
+get_stats = 0.6 # minutes
 
 DATABASE = './database.db'
 
@@ -159,7 +159,7 @@ def create_table():
 
         stats = """
         CREATE TABLE IF NOT EXISTS stats (
-            id INTEGER AUTO INCREMENT PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT ,
             container_id TEXT,
             cpu REAL,
             memory REAL,
@@ -195,14 +195,13 @@ def insert_containers(container_id, name, status):
         finally:
             return status
 
-def insert_stats(container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage):
+def insert_stats(container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts):
     with app.app_context():
         cur = get_db().cursor()
         con = get_db()
-        now = datetime.datetime.now()
         # now = utc_to_local(now)
         try:
-            status = cur.execute("INSERT INTO stats (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps) values (?,?,?,?,?,?,?)", (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, now))
+            status = cur.execute("INSERT INTO stats (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps) values (?,?,?,?,?,?,?)", (container_id, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts))
             con.commit()
         except:
             con.rollback()
@@ -213,6 +212,10 @@ def insert_stats(container_id, cpu, memory, memory_percentage, last_time_access,
 def stats():
     create_table()
     list = client.containers.list()
+    if not list:
+        return False
+
+    now = datetime.datetime.now()
     for c in list:
         if "moodle" in c.name:
             print("Container Name:",c.name)
@@ -225,7 +228,7 @@ def stats():
             # print(LTA_percentage, LTA_datetime)
 
             data_container = {"container_id":con.short_id, "name":con.name, "status":con.status}
-            data_stats = {"container_id":con.short_id, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage}
+            data_stats = {"container_id":con.short_id, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
 
             status = insert_containers(**data_container)
             print(status)
