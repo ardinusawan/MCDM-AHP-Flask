@@ -124,7 +124,7 @@ def stats():
         now = datetime.datetime.now()
         for c in list:
             if "moodle" in c.name:
-                print("Container Name:",c.name)
+                # print("Container Name:",c.name)
                 con = client.containers.get(c.short_id)
                 cpu_percentage = get_CPU_Percentage(con)
                 memory_percentage, memory_mb = get_Memory_Data(con)
@@ -135,7 +135,8 @@ def stats():
 
                 data_container = {"container_id":con.short_id, "name":con.name, "status":con.status}
                 data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
-                DB.insert_containers(**data_container)
-                DB.insert_stats(**data_stats)
+                status = DB.insert_containers(**data_container)
+                if status:
+                    DB.insert_stats(**data_stats)
 
         return True

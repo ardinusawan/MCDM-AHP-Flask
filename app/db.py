@@ -2,7 +2,7 @@ import MySQLdb
 import datetime
 import sys
 
-db = MySQLdb.connect("localhost","root","Asddsaa1","MCDM-AHP" )
+db = MySQLdb.connect("localhost","root","Asddsaa1","MCDM-AHP_dev" )
 
 # create table if not exist
 def create_table():
@@ -49,28 +49,30 @@ def insert_containers(container_id, name, status):
         sql = "INSERT INTO containers (container_id, name, status, timestamps) VALUES ('%s','%s','%s','%s')" % \
                              (container_id, name, status, now)
     elif msg == 1:
-        sql = "UPDATE containers SET name='%s', status='%s', timestamps='%s'" % \
-              (name, status, now)
+        sql = "UPDATE containers SET name='%s', status='%s', timestamps='%s' WHERE container_id = '%s'" % \
+              (name, status, now, container_id)
     try:
-        msg = cursor.execute(sql)
+        cursor.execute(sql)
         db.commit()
     except:
         db.rollback()
-        msg = sys.exc_info()
+        print(sys.exc_info())
+        return False
     finally:
-        return msg
+        return True
 
 
 def insert_stats(container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts):
     cursor = db.cursor()
     try:
-        status = cursor.execute(
+        cursor.execute(
             "INSERT INTO stats (container_id,container_name,cpu,memory, memory_percentage, last_time_access,last_time_access_percentage,timestamps) values ('%s','%s','%f','%f','%f','%s','%f','%s')" % \
             (container_id,container_name,cpu,memory, memory_percentage, last_time_access,last_time_access_percentage,ts))
         db.commit()
     except:
         db.rollback()
-        status = sys.exc_info()
+        print(sys.exc_info())
+        return False
     finally:
-        return status
+        return True
 

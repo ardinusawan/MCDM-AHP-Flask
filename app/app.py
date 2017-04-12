@@ -7,7 +7,7 @@ import utils as UTILS
 
 app = Flask(__name__)
 
-get_stats = 10 # minutes
+get_stats = 0.6 # minutes
 
 @app.route("/")
 def hello():
