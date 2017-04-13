@@ -20,7 +20,6 @@ def create_table():
     # else:
         # print("Tabel containers sudah ada, skip..")
 
-    cursor = db.cursor()
     stats = """
     CREATE TABLE IF NOT EXISTS stats (
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -40,6 +39,16 @@ def create_table():
     # else:
         # print("Tabel stats sudah ada, skip..")
 
+    # comparison_matrix = """
+    #     CREATE TABLE IF NOT EXISTS comparison_matrix (
+    #         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    #         parameter VARCHAR(255),
+    #         value FLOAT,
+    #         timestamps DATETIME,
+    #     """
+    # status = cursor.execute("SHOW TABLES LIKE 'stats'")
+    # if status == 0:
+    #     cursor.execute(comparison_matrix)
 def insert_containers(container_id, name, status):
     cursor = db.cursor()
     now = datetime.datetime.now()
@@ -75,4 +84,9 @@ def insert_stats(container_id, container_name, cpu, memory, memory_percentage, l
         return False
     finally:
         return True
+
+# def insert_comparisonMatric(amount_of_data,**kwargs):
+#     for i in range(amount_of_data):
+#         for key, value in kwargs.iteritems():
+#             print(key,value)
 

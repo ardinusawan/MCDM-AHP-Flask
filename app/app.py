@@ -1,10 +1,11 @@
 from flask import Flask
+from flask import request
 from flask import jsonify
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import utils as UTILS
-
+import ahp as AHP
 app = Flask(__name__)
 
 get_stats = 0.6 # minutes
@@ -19,6 +20,14 @@ def container_list():
     # print(dir(list[0]))
     con_log = ''
     return (con_log)
+
+@app.route("/AHP/1", methods=['GET', 'POST'])
+def computing_vector():
+    if request.method == 'POST':
+        data = request.get_json()
+        return jsonify(data)
+    else:
+        return jsonify({"Message":"Success"},sort_keys = False, indent = 2)
 
 #schedule to write stats to DB
 scheduler = BackgroundScheduler()

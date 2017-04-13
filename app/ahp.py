@@ -5,6 +5,7 @@ import math
 def f(num):
     return math.sqrt(math.sqrt(num))
 
+#langkah 1
 
 data = np.matrix([
     [1, 1 / 3, 1 / 9, 1 / 5],
@@ -22,3 +23,4 @@ for idx, val in enumerate(data):
     print(t[idx])
     sum += f(temp)
 print(t[0] / sum)
+
