@@ -49,10 +49,21 @@ def create_table():
     """
     status = cursor.execute("SHOW TABLES LIKE 'comparison_matrix'")
     if status == 0:
-        a = cursor.execute(comparison_matrix)
-        print(a)
+        cursor.execute(comparison_matrix)
     else:
-        print("Tabel comparison_matrix sudah ada, skip..")    
+        print("Tabel comparison_matrix sudah ada, skip..")
+
+    parameter = """
+        CREATE TABLE IF NOT EXISTS parameter (
+            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255),
+            timestamps DATETIME)
+        """
+    status = cursor.execute("SHOW TABLES LIKE 'parameter'")
+    if status == 0:
+        cursor.execute(parameter)
+    else:
+        print("Tabel parameter sudah ada, skip..")
 
 def insert_containers(container_id, name, status):
     cursor = db.cursor()
@@ -90,20 +101,40 @@ def insert_stats(container_id, container_name, cpu, memory, memory_percentage, l
     finally:
         return True
 
-def insert_comparisonMatric(amount_of_data,**kwargs):
-    # for i in range(amount_of_data):
+def insert_comparisonMatric(parameter_data,**kwargs):
     ts = datetime.datetime.now()
     cursor = db.cursor()
-    try:
-        for key, value in kwargs.items():
-            print(key,value)
+    status = False
+    create_table()
+
+    cursor.execute("TRUNCATE TABLE parameter")
+    for i in range(len(parameter_data)):
+        try:
             cursor.execute(
-                "REPLACE INTO comparison_matrix (comparison, value ,timestamps) values ('%s','%f','%s')" % \
+                "INSERT INTO parameter (name ,timestamps) values ('%s','%s')" % \
+                (parameter_data[i], ts))
+            db.commit()
+        except:
+            db.rollback()
+            print(sys.exc_info())
+            status = False
+            break
+        finally:
+            status = True
+
+    cursor.execute("TRUNCATE TABLE comparison_matrix")
+    for key, value in kwargs.items():
+        print(key,value)
+        try:
+            cursor.execute(
+                "INSERT INTO comparison_matrix (comparison, value ,timestamps) values ('%s','%f','%s')" % \
                 (key, value , ts))
             db.commit()
-    except:
-        db.rollback()
-        print(sys.exc_info())
-        return False
-    finally:
-        return True
+        except:
+            db.rollback()
+            print(sys.exc_info())
+            status = False
+            break
+        finally:
+            status = True
+    return status

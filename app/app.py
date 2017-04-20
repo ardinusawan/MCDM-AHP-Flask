@@ -9,7 +9,7 @@ import ahp as AHP
 import db as DB
 app = Flask(__name__)
 
-get_stats = 0.6 # minutes
+get_stats = 10 # minutes
 
 @app.route("/")
 def hello():
