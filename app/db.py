@@ -7,6 +7,7 @@ db = MySQLdb.connect("localhost","root","Asddsaa1","MCDM-AHP_dev" )
 # create table if not exist
 def create_table():
     cursor = db.cursor()
+
     containers = """
     CREATE TABLE IF NOT EXISTS containers (
         container_id VARCHAR(255) PRIMARY KEY, 
@@ -17,8 +18,8 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'containers'")
     if status == 0:
         cursor.execute(containers)
-    # else:
-        # print("Tabel containers sudah ada, skip..")
+    else:
+        print("Tabel containers sudah ada, skip..")
 
     stats = """
     CREATE TABLE IF NOT EXISTS stats (
@@ -36,19 +37,23 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'stats'")
     if status == 0:
         cursor.execute(stats)
-    # else:
-        # print("Tabel stats sudah ada, skip..")
+    else:
+        print("Tabel stats sudah ada, skip..")
 
-    # comparison_matrix = """
-    #     CREATE TABLE IF NOT EXISTS comparison_matrix (
-    #         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    #         parameter VARCHAR(255),
-    #         value FLOAT,
-    #         timestamps DATETIME,
-    #     """
-    # status = cursor.execute("SHOW TABLES LIKE 'stats'")
-    # if status == 0:
-    #     cursor.execute(comparison_matrix)
+    comparison_matrix = """
+    CREATE TABLE IF NOT EXISTS comparison_matrix (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        comparison VARCHAR(255),
+        value FLOAT,
+        timestamps DATETIME)
+    """
+    status = cursor.execute("SHOW TABLES LIKE 'comparison_matrix'")
+    if status == 0:
+        a = cursor.execute(comparison_matrix)
+        print(a)
+    else:
+        print("Tabel comparison_matrix sudah ada, skip..")    
+
 def insert_containers(container_id, name, status):
     cursor = db.cursor()
     now = datetime.datetime.now()
@@ -85,8 +90,20 @@ def insert_stats(container_id, container_name, cpu, memory, memory_percentage, l
     finally:
         return True
 
-# def insert_comparisonMatric(amount_of_data,**kwargs):
-#     for i in range(amount_of_data):
-#         for key, value in kwargs.iteritems():
-#             print(key,value)
-
+def insert_comparisonMatric(amount_of_data,**kwargs):
+    # for i in range(amount_of_data):
+    ts = datetime.datetime.now()
+    cursor = db.cursor()
+    try:
+        for key, value in kwargs.items():
+            print(key,value)
+            cursor.execute(
+                "REPLACE INTO comparison_matrix (comparison, value ,timestamps) values ('%s','%f','%s')" % \
+                (key, value , ts))
+            db.commit()
+    except:
+        db.rollback()
+        print(sys.exc_info())
+        return False
+    finally:
+        return True

@@ -6,6 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import utils as UTILS
 import ahp as AHP
+import db as DB
 app = Flask(__name__)
 
 get_stats = 0.6 # minutes
@@ -25,6 +26,7 @@ def container_list():
 def computing_vector():
     if request.method == 'POST':
         data = request.get_json()
+        status = DB.insert_comparisonMatric(data['parameter_data'],**data['comparison'])
         return jsonify(data)
     else:
         return jsonify({"Message":"Success"},sort_keys = False, indent = 2)
@@ -42,5 +44,5 @@ scheduler.add_job(
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
-    # app.debug = True
+    app.debug = True
     app.run()
