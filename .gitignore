@@ -88,4 +88,7 @@ ENV/
 # Rope project settings
 .ropeproject
 
+/moodle/*/apache_data/
+/moodle/*/php_data/
+
 .idea/
