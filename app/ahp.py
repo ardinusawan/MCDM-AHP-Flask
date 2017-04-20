@@ -1,12 +1,17 @@
 import numpy as np
 import math
-
+import db as DB
 
 def f(num):
     return math.sqrt(math.sqrt(num))
 
 #langkah 1
-
+# data = np.array(
+#     [
+#         (1.0, 1.0 / 3, 1 / 9, 1 / 5),
+#         (3.0, 1.0, 1.0, 1.0),
+#         (9.0, 1.0, 1.0, 3.0),
+#         (5.0, 1.0, 1 / 3, 1.0)],dtype=[('MSFT','float'),('CSCO','float'),('GOOG','float'),('F','float')])
 data = np.matrix([
     [1, 1 / 3, 1 / 9, 1 / 5],
     [3, 1, 1, 1],
@@ -17,10 +22,10 @@ t = []
 for idx, val in enumerate(data):
     temp = 1
     for val2 in range(val.size):
-        # print(val.item(val2))
         temp = temp * val.item(val2)
     t.append(f(temp))
-    print(t[idx])
+    # print(t[idx])
     sum += f(temp)
-print(t[0] / sum)
+for i in range(len(t)):
+    print(t[i] / sum)
 
