@@ -138,3 +138,16 @@ def insert_comparisonMatric(parameter_data,**kwargs):
         finally:
             status = True
     return status
+
+def get_last_data(tablename,**kwargs):
+    cursor = db.cursor()
+    sql = "SELECT * FROM %s WHERE %s = '%s' ORDER BY timestamps DESC LIMIT 1;" % \
+          (tablename,kwargs["column"],kwargs["value"])
+    msg = cursor.execute(sql)
+    print(msg)
+    if msg == 0:
+        msg = False
+    return msg
+
+
+

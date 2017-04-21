@@ -28,3 +28,9 @@ for idx, val in enumerate(data):
 for i in range(len(weigh_of_criteria)):
     print(weigh_of_criteria[i] / sum)
 
+# 2
+data_cpu = []
+tablename = "stats"
+data = ({"column":"container_name","value":"moodle1"})
+last_data = DB.get_last_data(tablename,**data)
+print(last_data)
