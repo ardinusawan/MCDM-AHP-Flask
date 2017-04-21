@@ -143,8 +143,8 @@ def get_last_data(tablename,**kwargs):
     cursor = db.cursor()
     sql = "SELECT * FROM %s WHERE %s = '%s' ORDER BY timestamps DESC LIMIT 1;" % \
           (tablename,kwargs["column"],kwargs["value"])
-    msg = cursor.execute(sql)
-    print(msg)
+    cursor.execute(sql)
+    msg = cursor.fetchone()
     if msg == 0:
         msg = False
     return msg
