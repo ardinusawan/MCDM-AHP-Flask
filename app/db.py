@@ -19,6 +19,7 @@ def create_table():
     if status == 0:
         cursor.execute(containers)
     else:
+        cursor.execute("TRUNCATE TABLE containers")
         print("Tabel containers sudah ada, skip..")
 
     stats = """
@@ -32,7 +33,6 @@ def create_table():
         last_time_access DATETIME,
         last_time_access_percentage FLOAT,
         timestamps DATETIME,
-        FOREIGN KEY(container_id) REFERENCES containers(container_id) ON DELETE NO ACTION ON UPDATE NO ACTION)
     """
     status = cursor.execute("SHOW TABLES LIKE 'stats'")
     if status == 0:
