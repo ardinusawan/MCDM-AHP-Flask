@@ -32,7 +32,7 @@ def create_table():
         memory_percentage FLOAT,
         last_time_access DATETIME,
         last_time_access_percentage FLOAT,
-        timestamps DATETIME,
+        timestamps DATETIME)
     """
     status = cursor.execute("SHOW TABLES LIKE 'stats'")
     if status == 0:
