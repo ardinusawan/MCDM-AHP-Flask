@@ -133,7 +133,7 @@ def stats():
                 # print(memory_percentage, memory_mb)
                 # print(LTA_percentage, LTA_datetime)
 
-                data_container = {"container_id":con.short_id, "name":con.name, "status":con.status}
+                data_container = {"container_id":con.short_id, "name":con.name, "status":con.status, "now":now}
                 data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
                 status = DB.insert_containers(**data_container)
                 if status:
