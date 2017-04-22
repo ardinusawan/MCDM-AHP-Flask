@@ -1,7 +1,9 @@
 import numpy as np
 import math
 import db as database
+import pprint
 
+pp = pprint.PrettyPrinter()
 
 def f(num):
     return math.sqrt(math.sqrt(num))
@@ -22,6 +24,7 @@ def get_container(**kwargs):
 #         (5.0, 1.0, 1 / 3, 1.0)],dtype=[('MSFT','float'),('CSCO','float'),('GOOG','float'),('F','float')])
 def weight_of_criteria():
     data = np.matrix([
+        # memory,waktu,cpu
         [1, 2, 4],
         [0.5, 1, 2],
         [0.25, 0.5, 1]])
@@ -130,12 +133,12 @@ for i in range(total-1):
     for j in range(total-1):
         score[i] += node[i][j] * option[j]
 
-name = []
+container = []
 for item in get_container():
-    name.append(str(item[0]))
-data = dict(zip(sorted(name),score))
+    container.append(str(item[0]))
 
+data = dict(zip(container,score))
 container_selected = max(data, key=lambda key: data[key])
-
-print(data)
+print("Last Score for each node:")
+pp.pprint(data)
 print("Best container to kill:",container_selected)
