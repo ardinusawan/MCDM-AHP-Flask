@@ -2,7 +2,8 @@ import MySQLdb
 import datetime
 import sys
 
-db = MySQLdb.connect("localhost","root","Asddsaa1","MCDM-AHP_dev" )
+db = MySQLdb.connect("localhost", "root", "Asddsaa1", "MCDM-AHP_dev")
+
 
 # create table if not exist
 def create_table():
@@ -65,14 +66,14 @@ def create_table():
     else:
         print("Tabel parameter sudah ada, skip..")
 
-def insert_containers(container_id, name, status):
+
+def insert_containers(container_id, name, status, now):
     cursor = db.cursor()
-    now = datetime.datetime.now()
-    sql = "SELECT container_id FROM containers WHERE container_id = '%s'" % (container_id)
+    sql = "SELECT container_id FROM containers WHERE container_id = '%s'" % container_id
     msg = cursor.execute(sql)
     if msg == 0:
         sql = "INSERT INTO containers (container_id, name, status, timestamps) VALUES ('%s','%s','%s','%s')" % \
-                             (container_id, name, status, now)
+              (container_id, name, status, now)
     elif msg == 1:
         sql = "UPDATE containers SET name='%s', status='%s', timestamps='%s' WHERE container_id = '%s'" % \
               (name, status, now, container_id)
@@ -87,12 +88,17 @@ def insert_containers(container_id, name, status):
         return True
 
 
-def insert_stats(container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, ts):
+def insert_stats(container_id, container_name, cpu, memory, memory_percentage, last_time_access,
+                 last_time_access_percentage, ts):
     cursor = db.cursor()
     try:
         cursor.execute(
-            "INSERT INTO stats (container_id,container_name,cpu,memory, memory_percentage, last_time_access,last_time_access_percentage,timestamps) values ('%s','%s','%f','%f','%f','%s','%f','%s')" % \
-            (container_id,container_name,cpu,memory, memory_percentage, last_time_access,last_time_access_percentage,ts))
+            "INSERT INTO stats (container_id,container_name,cpu,memory, memory_percentage, last_time_access,"
+            "last_time_access_percentage,timestamps) values ('%s','%s','%f','%f','%f','%s','%f','%s')" % \
+            (
+                container_id, container_name, cpu, memory, memory_percentage, last_time_access,
+                last_time_access_percentage,
+                ts))
         db.commit()
     except:
         db.rollback()
@@ -101,7 +107,8 @@ def insert_stats(container_id, container_name, cpu, memory, memory_percentage, l
     finally:
         return True
 
-def insert_comparisonMatric(parameter_data,**kwargs):
+
+def insert_comparison_matrix(parameter_data, **kwargs):
     ts = datetime.datetime.now()
     cursor = db.cursor()
     status = False
@@ -124,11 +131,11 @@ def insert_comparisonMatric(parameter_data,**kwargs):
 
     cursor.execute("TRUNCATE TABLE comparison_matrix")
     for key, value in kwargs.items():
-        print(key,value)
+        print(key, value)
         try:
             cursor.execute(
                 "INSERT INTO comparison_matrix (comparison, value ,timestamps) values ('%s','%f','%s')" % \
-                (key, value , ts))
+                (key, value, ts))
             db.commit()
         except:
             db.rollback()
@@ -139,10 +146,11 @@ def insert_comparisonMatric(parameter_data,**kwargs):
             status = True
     return status
 
-def get_last_data(tablename,**kwargs):
+
+def get_last_data(tableName, **kwargs):
     cursor = db.cursor()
     sql = "SELECT * FROM %s WHERE %s = '%s' ORDER BY timestamps DESC LIMIT 1;" % \
-          (tablename,kwargs["column"],kwargs["value"])
+          (tableName, kwargs["column"], kwargs["value"])
     cursor.execute(sql)
     msg = cursor.fetchone()
     if msg == 0:
@@ -150,4 +158,11 @@ def get_last_data(tablename,**kwargs):
     return msg
 
 
-
+def total_data(table_name):
+    cursor = db.cursor()
+    sql = "SELECT COUNT(*) FROM %s ;" % \
+          table_name
+    cursor.execute(sql)
+    msg = cursor.fetchone()
+    msg = msg[0]
+    return msg
