@@ -176,3 +176,20 @@ def all_data(table_name,**sort):
     cursor.execute(sql)
     msg = cursor.fetchall()
     return msg
+
+def find_data(table_name, **kwargs):
+    cursor = db.cursor()
+    where = ""
+    i = 0
+    for key,value in kwargs.items():
+        where += key + " = " + str(value)
+        if i < len(kwargs.keys()) - 1:
+            where += " AND "
+        i += 1
+    sql = "SELECT * FROM {} WHERE {}" .format(table_name,where)
+    cursor.execute(sql)
+    msg = cursor.fetchall()
+    if msg == 0:
+        msg = False
+    print(msg)
+    return msg
