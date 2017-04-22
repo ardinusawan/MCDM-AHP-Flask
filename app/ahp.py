@@ -43,26 +43,30 @@ def rating_of_each_node(*args, **kwargs):
     # mendapatkan semua container id, ASC nama kontainer
     data = database.all_data(table_name, **sort)
 
+    temp = np.zeros((total,total))
     for i in range(total):
         # mendapatkan data terakhir pada stats
         ts = "'" + data[i][3].strftime('%Y-%m-%d %H:%M:%S') + "'"
         container_id = "'" + data[i][0] + "'"
         find_by = {"container_id": container_id, "timestamps": ts}
-        res = database.find_data("stats", **find_by)
-        print(res[0][params])
-
+        res1 = database.find_data("stats", **find_by)
         # hitung dari 1 - n, n1/nN
+        for j in range(total):
+            # mendapatkan data terakhir pada stats
+            ts = "'" + data[j][3].strftime('%Y-%m-%d %H:%M:%S') + "'"
+            container_id = "'" + data[j][0] + "'"
+            find_by = {"container_id": container_id, "timestamps": ts}
+            res2 = database.find_data("stats", **find_by)
+            # print(res[0][params])
+            temp[i][j] = res1[0][params]/res2[0][params]
 
 
         # temp = data[i]
         # setelah dapat, buat skala antara 1 - 9, dari 0 sampai +- data terbesar
         # untuk setiap hasil perbandingan, bandingkan cocoknya berada pada posisi mana, apakah - atau 0 atau +
         # taruh dalam list
-        pass
-        # data = ({"column": "container_name", "value": "moodle1"})
-        # last_data = database.last_data(table_name, **data)
-        # print(last_data)
-
+    print(temp)
+    print("min: ",np.amin(temp),"\nmax: ",np.amax(temp))
 
 calculate = "LTA"
 rating_of_each_node(*calculate)
