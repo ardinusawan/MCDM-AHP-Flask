@@ -191,5 +191,4 @@ def find_data(table_name, **kwargs):
     msg = cursor.fetchall()
     if msg == 0:
         msg = False
-    print(msg)
     return msg
