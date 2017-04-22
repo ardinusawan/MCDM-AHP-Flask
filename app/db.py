@@ -147,7 +147,7 @@ def insert_comparison_matrix(parameter_data, **kwargs):
     return status
 
 
-def get_last_data(tableName, **kwargs):
+def last_data(tableName, **kwargs):
     cursor = db.cursor()
     sql = "SELECT * FROM %s WHERE %s = '%s' ORDER BY timestamps DESC LIMIT 1;" % \
           (tableName, kwargs["column"], kwargs["value"])
@@ -165,4 +165,14 @@ def total_data(table_name):
     cursor.execute(sql)
     msg = cursor.fetchone()
     msg = msg[0]
+    return msg
+
+def all_data(table_name,**sort):
+    cursor = db.cursor()
+    sql = "SELECT * FROM {}" .format(table_name)
+    if sort:
+        temp = " ORDER BY {}" .format(sort['column'],sort['order'])
+        sql = sql + temp
+    cursor.execute(sql)
+    msg = cursor.fetchall()
     return msg
