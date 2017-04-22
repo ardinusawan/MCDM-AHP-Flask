@@ -167,12 +167,15 @@ def total_data(table_name):
     msg = msg[0]
     return msg
 
-def all_data(table_name,**sort):
+def all_data(table_name,**kwargs):
     cursor = db.cursor()
     sql = "SELECT * FROM {}" .format(table_name)
-    if sort:
-        temp = " ORDER BY {}" .format(sort['column'],sort['order'])
+    if "select" in kwargs:
+        sql = "SELECT {} FROM {}".format(kwargs["select"]["data"],table_name)
+    if "sort" in kwargs:
+        temp = " ORDER BY {}" .format(kwargs["sort"]['column'],kwargs["sort"]['order'])
         sql = sql + temp
+
     cursor.execute(sql)
     msg = cursor.fetchall()
     return msg
