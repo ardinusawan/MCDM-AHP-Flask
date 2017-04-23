@@ -135,6 +135,7 @@ def stats():
                 status = database.insert_containers(**data_container)
                 if status:
                     database.insert_stats(**data_stats)
+        ahp_score()
         return True
 
 def ahp_score(**kwargs):
@@ -156,6 +157,7 @@ def ahp_score(**kwargs):
     # value = "".join(str(list(value)).strip('[]'))
 
     table_name = "result"
+    kwargs["mode"] = "INSERT IGNORE"
     msg = database.insert(table_name,**kwargs)
     if msg:
         return score
