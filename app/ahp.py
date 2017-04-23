@@ -40,11 +40,9 @@ def weight_of_criteria():
         weigh_of_criteria.append(f(temp))
         # print(t[idx])
         total += f(temp)
-    a = 0
+
     for i in range(len(weigh_of_criteria)):
         weigh_of_criteria[i] = weigh_of_criteria[i] / total
-        a += weigh_of_criteria[i]
-    print("weigh_of_criteria: ",a)
     # memory,waktu,cpu
     return weigh_of_criteria
 
@@ -111,7 +109,7 @@ def rating_of_each_node(*args, **kwargs):
         res = database.find_data("stats", **find_by)
 
         sum += res[0][params]
-    a = 0
+
     for j in range(total):
         ts = "'" + data[j][3].strftime('%Y-%m-%d %H:%M:%S') + "'"
         container_id = "'" + data[j][0] + "'"
@@ -121,8 +119,6 @@ def rating_of_each_node(*args, **kwargs):
             temp[j] = 0
         else:
             temp[j] = res[0][params] / sum
-            a += temp[j]
-    print(''.join(args),'',a)
     return temp
 
 def final_score():
@@ -145,7 +141,7 @@ def final_score():
     for i in range(0,containers_total):
         for j in range(0,parameter_total):
             score[i] += node[j][i] * option[j]
-        print(score[i])
+
     container = []
     for item in get_container():
         container.append(str(item[0]))
