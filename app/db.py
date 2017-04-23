@@ -21,7 +21,7 @@ def create_table():
         cursor.execute(containers)
     else:
         cursor.execute("TRUNCATE TABLE containers")
-        print("Tabel containers sudah ada, skip..")
+        print("Table containers is already, skip..")
 
     stats = """
     CREATE TABLE IF NOT EXISTS stats (
@@ -39,7 +39,7 @@ def create_table():
     if status == 0:
         cursor.execute(stats)
     else:
-        print("Tabel stats sudah ada, skip..")
+        print("Table stats is already, skip..")
 
     comparison_matrix = """
     CREATE TABLE IF NOT EXISTS comparison_matrix (
@@ -52,7 +52,7 @@ def create_table():
     if status == 0:
         cursor.execute(comparison_matrix)
     else:
-        print("Tabel comparison_matrix sudah ada, skip..")
+        print("Table comparison_matrix is already, skip..")
 
     parameter = """
         CREATE TABLE IF NOT EXISTS parameter (
@@ -64,7 +64,19 @@ def create_table():
     if status == 0:
         cursor.execute(parameter)
     else:
-        print("Tabel parameter sudah ada, skip..")
+        print("Table parameter is already, skip..")
+
+    result = """
+            CREATE TABLE IF NOT EXISTS result (
+                container_id VARCHAR(255),
+                score FLOAT,
+                timestamps DATETIME PRIMARY KEY)
+            """
+    status = cursor.execute("SHOW TABLES LIKE 'result'")
+    if status == 0:
+        cursor.execute(result)
+    else:
+        print("Table result is already, skip..")
 
 
 def insert_containers(container_id, name, status, now):
@@ -180,8 +192,9 @@ def all_data(table_name,**kwargs):
     msg = cursor.fetchall()
     return msg
 
-def find_data(table_name, **kwargs):
+def find_data(table_name, *args, **kwargs):
     cursor = db.cursor()
+    args = ','.join(map(str, list(args)))
     where = ""
     i = 0
     for key,value in kwargs.items():
@@ -189,9 +202,25 @@ def find_data(table_name, **kwargs):
         if i < len(kwargs.keys()) - 1:
             where += " AND "
         i += 1
-    sql = "SELECT * FROM {table_name} WHERE {where}" .format(table_name=table_name,where=where)
+    sql = "SELECT * FROM {table_name} WHERE {where}".format(table_name=table_name, where=where)
+    if args:
+        sql = "SELECT {select} FROM {table_name} WHERE {where}".format(select=args,table_name=table_name, where=where)
     cursor.execute(sql)
     msg = cursor.fetchall()
     if msg == 0:
         msg = False
     return msg
+
+def insert(table_name,**kwargs):
+    cursor = db.cursor()
+    sql = "INSERT INTO {table_name} ({params}) VALUES ({values})".format(table_name=table_name,params=kwargs["params"],values=kwargs["value"])
+    print(sql)
+    try:
+        cursor.execute(sql)
+        db.commit()
+    except:
+        db.rollback()
+        print(sys.exc_info())
+        return False
+    finally:
+        return True

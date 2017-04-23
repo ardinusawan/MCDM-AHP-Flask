@@ -2,9 +2,9 @@ import docker
 import logging
 import pytz
 import datetime
-import db as DB
+import db as database
 from flask import Flask
-
+import ahp as ahp
 app = Flask(__name__)
 
 delay = 60 #minute
@@ -116,7 +116,7 @@ def get_CPU_Percentage(con):
 
 def stats():
     with app.app_context():
-        DB.create_table()
+        database.create_table()
         list = client.containers.list()
         if not list:
             return False
@@ -129,14 +129,35 @@ def stats():
                 cpu_percentage = get_CPU_Percentage(con)
                 memory_percentage, memory_mb = get_Memory_Data(con)
                 LTA_percentage, LTA_datetime = get_LTA_Data(con)
-                # print(cpu_percentage)
-                # print(memory_percentage, memory_mb)
-                # print(LTA_percentage, LTA_datetime)
 
                 data_container = {"container_id":con.short_id, "name":con.name, "status":con.status, "now":now}
                 data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
-                status = DB.insert_containers(**data_container)
+                status = database.insert_containers(**data_container)
                 if status:
-                    DB.insert_stats(**data_stats)
-
+                    database.insert_stats(**data_stats)
         return True
+
+def ahp_score(**kwargs):
+    score = ahp.final_score()
+
+    find_by = {"container_id": "'" + score["selected"] + "'"}
+    select = ['timestamps']
+    ts = database.find_data("containers",*select, **find_by)
+    ts = "'" + ts[0][0].strftime("%Y-%m-%d %H:%M:%S") + "'"
+
+    kwargs["params"] = "container_id, score, timestamps"
+    temp = str(score["result"].get(score["selected"]))
+    kwargs["value"] = ["'" + score["selected"] + "'","'" + temp + "'", ts]
+    kwargs["value"] = ', '.join(map(str, list(kwargs["value"])))
+
+    # key = score["result"].keys()
+    # key = "".join(str(list(key)).strip('[]'))
+    # value = score["result"].values()
+    # value = "".join(str(list(value)).strip('[]'))
+
+    table_name = "result"
+    msg = database.insert(table_name,**kwargs)
+    if msg:
+        return score
+    else:
+        return False

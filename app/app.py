@@ -6,7 +6,6 @@ from apscheduler.triggers.interval import IntervalTrigger
 from flask import Flask
 from flask import jsonify
 from flask import request
-import ahp as ahp
 import db as database
 
 app = Flask(__name__)
@@ -38,7 +37,7 @@ def computing_vector():
 
 @app.route("/AHP/result", methods=['GET'])
 def ahp_result():
-    return jsonify({"message":"success", "data":ahp.final_score()})
+    return jsonify({"message":"success", "data":utils.ahp_score()})
 
 # schedule to write stats to DB
 scheduler = BackgroundScheduler()
