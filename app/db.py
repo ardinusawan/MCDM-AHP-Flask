@@ -21,7 +21,7 @@ def create_table():
         cursor.execute(containers)
     else:
         cursor.execute("TRUNCATE TABLE containers")
-        print("Table containers is already, skip..")
+        # print("Table containers is already, skip..")
 
     stats = """
     CREATE TABLE IF NOT EXISTS stats (
@@ -38,8 +38,8 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'stats'")
     if status == 0:
         cursor.execute(stats)
-    else:
-        print("Table stats is already, skip..")
+    # else:
+        # print("Table stats is already, skip..")
 
     comparison_matrix = """
     CREATE TABLE IF NOT EXISTS comparison_matrix (
@@ -51,8 +51,8 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'comparison_matrix'")
     if status == 0:
         cursor.execute(comparison_matrix)
-    else:
-        print("Table comparison_matrix is already, skip..")
+    # else:
+        # print("Table comparison_matrix is already, skip..")
 
     parameter = """
         CREATE TABLE IF NOT EXISTS parameter (
@@ -63,8 +63,8 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'parameter'")
     if status == 0:
         cursor.execute(parameter)
-    else:
-        print("Table parameter is already, skip..")
+    # else:
+    #     print("Table parameter is already, skip..")
 
     result = """
             CREATE TABLE IF NOT EXISTS result (
@@ -75,8 +75,8 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'result'")
     if status == 0:
         cursor.execute(result)
-    else:
-        print("Table result is already, skip..")
+    # else:
+    #     print("Table result is already, skip..")
 
 
 def insert_containers(container_id, name, status, now):
@@ -213,8 +213,9 @@ def find_data(table_name, *args, **kwargs):
 
 def insert(table_name,**kwargs):
     cursor = db.cursor()
-    sql = "INSERT INTO {table_name} ({params}) VALUES ({values})".format(table_name=table_name,params=kwargs["params"],values=kwargs["value"])
-    print(sql)
+    sql = "{mode} {table_name} ({params}) VALUES ({values})".format(mode=kwargs["mode"],table_name=table_name,
+                                                                                params=kwargs["params"],
+                                                                                values=kwargs["value"])
     try:
         cursor.execute(sql)
         db.commit()
