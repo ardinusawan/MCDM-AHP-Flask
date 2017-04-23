@@ -6,6 +6,8 @@ from apscheduler.triggers.interval import IntervalTrigger
 from flask import Flask
 from flask import jsonify
 from flask import request
+import ahp as ahp
+import db as database
 
 app = Flask(__name__)
 
@@ -22,7 +24,6 @@ def container_list():
     utils.stats()
     # print(dir(list[0]))
     con_log = ""
-    utils.stats()
     return con_log
 
 
@@ -30,11 +31,14 @@ def container_list():
 def computing_vector():
     if request.method == 'POST':
         data = request.get_json()
-        # status = database.insert_comparison_matrix(data['parameter_data'], **data['comparison'])
+        status = database.insert_comparison_matrix(data['parameter_data'], **data['comparison'])
         return jsonify(data)
     else:
         return jsonify({"Message": "Success"}, sort_keys=False, indent=2)
 
+@app.route("/AHP/result", methods=['GET'])
+def ahp_result():
+    return jsonify({"message":"success", "data":ahp.final_score()})
 
 # schedule to write stats to DB
 scheduler = BackgroundScheduler()
@@ -49,5 +53,5 @@ scheduler.add_job(
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
-    app.debug = True
-    app.run()
+    # app.debug = True
+    app.run(debug=True)

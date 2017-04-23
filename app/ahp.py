@@ -14,7 +14,7 @@ def get_container(**kwargs):
     kwargs["sort"] = {"column": "name", "order": "ASD"}
     kwargs["select"] = {"data": "container_id"}
 
-    data = database.all_data(table_name, **kwargs)
+    data = database.all_data("containers", **kwargs)
     return data
 
 
@@ -40,9 +40,11 @@ def weight_of_criteria():
         weigh_of_criteria.append(f(temp))
         # print(t[idx])
         total += f(temp)
+    a = 0
     for i in range(len(weigh_of_criteria)):
         weigh_of_criteria[i] = weigh_of_criteria[i] / total
-
+        a += weigh_of_criteria[i]
+    print("weigh_of_criteria: ",a)
     # memory,waktu,cpu
     return weigh_of_criteria
 
@@ -109,7 +111,7 @@ def rating_of_each_node(*args, **kwargs):
         res = database.find_data("stats", **find_by)
 
         sum += res[0][params]
-
+    a = 0
     for j in range(total):
         ts = "'" + data[j][3].strftime('%Y-%m-%d %H:%M:%S') + "'"
         container_id = "'" + data[j][0] + "'"
@@ -119,34 +121,47 @@ def rating_of_each_node(*args, **kwargs):
             temp[j] = 0
         else:
             temp[j] = res[0][params] / sum
+            a += temp[j]
+    print(''.join(args),'',a)
     return temp
 
+def final_score():
+    containers_total = database.total_data("containers")
+    if containers_total == 0:
+        return None
+    parameter_total = database.total_data("parameter")
 
-table_name = "containers"
-total = database.total_data(table_name)
+    option = weight_of_criteria()
 
-option = weight_of_criteria()
+    score = [0] * containers_total
+    node = [0] * parameter_total
+    calculate = "Memory"
+    node[0] = rating_of_each_node(*calculate)
+    calculate = "LTA"
+    node[1] = rating_of_each_node(*calculate)
+    calculate = "CPU"
+    node[2] = rating_of_each_node(*calculate)
 
-score = [0] * total
-node = [0] * total
-calculate = "Memory"
-node[0] = rating_of_each_node(*calculate)
-calculate = "LTA"
-node[1] = rating_of_each_node(*calculate)
-calculate = "CPU"
-node[2] = rating_of_each_node(*calculate)
+    for i in range(0,containers_total):
+        for j in range(0,parameter_total):
+            score[i] += node[j][i] * option[j]
+        print(score[i])
+    container = []
+    for item in get_container():
+        container.append(str(item[0]))
 
-for i in range(0,total):
-    for idx,val in enumerate(node):
-        score[i] += val[idx] * option[i]
+    result = dict(zip(container,score))
+    container_selected = max(result, key=lambda key: result[key])
+    # print("Last Score for each node:")
+    # pp.pprint(data)
+    # print("Best container to kill:",container_selected)
+    text = "selected"
+    params = ''.join(text)
+    container_selected = {params:container_selected}
 
-print("MCDM for Decrasing Resource Server While Running Many Docker Container using AHP")
-container = []
-for item in get_container():
-    container.append(str(item[0]))
+    text = "result"
+    params = ''.join(text)
+    result = {params: result}
 
-data = dict(zip(container,score))
-container_selected = max(data, key=lambda key: data[key])
-print("Last Score for each node:")
-pp.pprint(data)
-print("Best container to kill:",container_selected)
+    msg = {**container_selected, **result}
+    return msg

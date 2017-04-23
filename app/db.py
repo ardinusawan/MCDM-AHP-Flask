@@ -2,7 +2,7 @@ import MySQLdb
 import datetime
 import sys
 
-db = MySQLdb.connect("localhost", "root", "Asddsaa1", "MCDM-AHP_dev")
+db = MySQLdb.connect("localhost", "root", "Asddsaa1", "MCDM-AHP")
 
 
 # create table if not exist
