@@ -169,9 +169,9 @@ def total_data(table_name):
 
 def all_data(table_name,**kwargs):
     cursor = db.cursor()
-    sql = "SELECT * FROM {}" .format(table_name)
+    sql = "SELECT * FROM {table_name}" .format(table_name=table_name)
     if "select" in kwargs:
-        sql = "SELECT {} FROM {}".format(kwargs["select"]["data"],table_name)
+        sql = "SELECT {column} FROM {table}".format(column=kwargs["select"]["data"],table=table_name)
     if "sort" in kwargs:
         temp = " ORDER BY {}" .format(kwargs["sort"]['column'],kwargs["sort"]['order'])
         sql = sql + temp
@@ -189,7 +189,7 @@ def find_data(table_name, **kwargs):
         if i < len(kwargs.keys()) - 1:
             where += " AND "
         i += 1
-    sql = "SELECT * FROM {} WHERE {}" .format(table_name,where)
+    sql = "SELECT * FROM {table_name} WHERE {where}" .format(table_name=table_name,where=where)
     cursor.execute(sql)
     msg = cursor.fetchall()
     if msg == 0:
