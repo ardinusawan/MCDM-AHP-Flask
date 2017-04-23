@@ -5,15 +5,18 @@ import pprint
 
 pp = pprint.PrettyPrinter()
 
+
 def f(num):
     return math.sqrt(math.sqrt(num))
 
+
 def get_container(**kwargs):
     kwargs["sort"] = {"column": "name", "order": "ASD"}
-    kwargs["select"] = {"data":"container_id"}
+    kwargs["select"] = {"data": "container_id"}
 
     data = database.all_data(table_name, **kwargs)
     return data
+
 
 # langkah 1
 # data = np.array(
@@ -42,6 +45,7 @@ def weight_of_criteria():
 
     # memory,waktu,cpu
     return weigh_of_criteria
+
 
 '''
 def rating_of_each_node(*args, **kwargs):
@@ -80,6 +84,8 @@ def rating_of_each_node(*args, **kwargs):
     print(temp)
     print("min: ",np.amin(temp),"\nmax: ",np.amax(temp))
 '''
+
+
 def rating_of_each_node(*args, **kwargs):
     params = ''.join(args)
     if params == "CPU":
@@ -110,8 +116,9 @@ def rating_of_each_node(*args, **kwargs):
         find_by = {"container_id": container_id, "timestamps": ts}
         res = database.find_data("stats", **find_by)
         if sum == 0:
-            sum = 1
-        temp[j]= res[0][params]/sum
+            temp[j] = 0
+        else:
+            temp[j] = res[0][params] / sum
     return temp
 
 
@@ -129,10 +136,11 @@ node[1] = rating_of_each_node(*calculate)
 calculate = "CPU"
 node[2] = rating_of_each_node(*calculate)
 
-for i in range(total-1):
-    for j in range(total-1):
-        score[i] += node[i][j] * option[j]
+for i in range(0,total):
+    for idx,val in enumerate(node):
+        score[i] += val[idx] * option[i]
 
+print("MCDM for Decrasing Resource Server While Running Many Docker Container using AHP")
 container = []
 for item in get_container():
     container.append(str(item[0]))
