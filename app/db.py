@@ -82,45 +82,45 @@ def create_table():
     #     print("Table result is already, skip..")
 
 
-def insert_containers(container_id, name, status, now):
-    cursor = db.cursor()
-    sql = "SELECT container_id FROM containers WHERE container_id = '%s'" % container_id
-    msg = cursor.execute(sql)
-    if msg == 0:
-        sql = "INSERT INTO containers (container_id, name, status, timestamps) VALUES ('%s','%s','%s','%s')" % \
-              (container_id, name, status, now)
-    elif msg == 1:
-        sql = "UPDATE containers SET name='%s', status='%s', timestamps='%s' WHERE container_id = '%s'" % \
-              (name, status, now, container_id)
-    try:
-        cursor.execute(sql)
-        db.commit()
-    except:
-        db.rollback()
-        print(sys.exc_info())
-        return False
-    finally:
-        return True
+# def insert_containers(container_id, name, status, now):
+#     cursor = db.cursor()
+#     sql = "SELECT container_id FROM containers WHERE container_id = '%s'" % container_id
+#     msg = cursor.execute(sql)
+#     if msg == 0:
+#         sql = "INSERT INTO containers (container_id, name, status, timestamps) VALUES ('%s','%s','%s','%s')" % \
+#               (container_id, name, status, now)
+#     elif msg == 1:
+#         sql = "UPDATE containers SET name='%s', status='%s', timestamps='%s' WHERE container_id = '%s'" % \
+#               (name, status, now, container_id)
+#     try:
+#         cursor.execute(sql)
+#         db.commit()
+#     except:
+#         db.rollback()
+#         print(sys.exc_info())
+#         return False
+#     finally:
+#         return True
 
 
-def insert_stats(container_id, container_name, cpu, memory, memory_percentage, last_time_access,
-                 last_time_access_percentage, ts):
-    cursor = db.cursor()
-    try:
-        cursor.execute(
-            "INSERT INTO stats (container_id,container_name,cpu,memory, memory_percentage, last_time_access,"
-            "last_time_access_percentage,timestamps) values ('%s','%s','%f','%f','%f','%s','%f','%s')" % \
-            (
-                container_id, container_name, cpu, memory, memory_percentage, last_time_access,
-                last_time_access_percentage,
-                ts))
-        db.commit()
-    except:
-        db.rollback()
-        print(sys.exc_info())
-        return False
-    finally:
-        return True
+# def insert_stats(container_id, container_name, cpu, memory, memory_percentage, last_time_access,
+#                  last_time_access_percentage, ts):
+#     cursor = db.cursor()
+#     try:
+#         cursor.execute(
+#             "INSERT INTO stats (container_id,container_name,cpu,memory, memory_percentage, last_time_access,"
+#             "last_time_access_percentage,timestamps) values ('%s','%s','%f','%f','%f','%s','%f','%s')" % \
+#             (
+#                 container_id, container_name, cpu, memory, memory_percentage, last_time_access,
+#                 last_time_access_percentage,
+#                 ts))
+#         db.commit()
+#     except:
+#         db.rollback()
+#         print(sys.exc_info())
+#         return False
+#     finally:
+#         return True
 
 
 def insert_comparison_matrix(parameter_data, **kwargs):
@@ -216,17 +216,21 @@ def find_data(table_name, *args, **kwargs):
 
 def insert(table_name,**kwargs):
     cursor = db.cursor()
+    status = False
+    if "truncate" in kwargs:
+        truncate(table_name)
     if "mode" not in kwargs:
         kwargs["mode"] = "INSERT"
-    sql = "{mode} INTO {table_name} ({params}) VALUES ({values})".format(mode=kwargs["mode"],table_name=table_name,
-                                                                                params=kwargs["params"],
-                                                                                values=kwargs["value"])
+    sql = "{mode} INTO {table_name} ({params}) VALUES ({values})".format(mode=kwargs["mode"],
+                                                                         table_name=table_name,
+                                                                         params=kwargs["params"],
+                                                                         values=kwargs["value"])
     try:
-        cursor.execute(sql)
+        status = cursor.execute(sql)
         db.commit()
     except:
         db.rollback()
         print(table_name,sys.exc_info())
-        return False
+        return status
     finally:
-        return True
+        return status
