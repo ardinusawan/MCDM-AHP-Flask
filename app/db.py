@@ -195,23 +195,44 @@ def all_data(table_name,**kwargs):
     msg = cursor.fetchall()
     return msg
 
-def find_data(table_name, *args, **kwargs):
+# def find_data(table_name, *args, **kwargs):
+#     cursor = db.cursor()
+#     args = ','.join(map(str, list(args)))
+#     where = ""
+#     msg = ""
+#     i = 0
+#     for key,value in kwargs.items():
+#         where += key + " = " + str(value)
+#         if i < len(kwargs.keys()) - 1:
+#             where += " AND "
+#         i += 1
+#     sql = "SELECT * FROM {table_name} WHERE {where}".format(table_name=table_name, where=where)
+#     if args:
+#         sql = "SELECT {select} FROM {table_name} WHERE {where}".format(select=args,table_name=table_name, where=where)
+#     try:
+#         cursor.execute(sql)
+#         msg = cursor.fetchall()
+#     except:
+#         db.rollback()
+#         print(table_name, sys.exc_info())
+    return msg
+
+def select(table_name,**kwargs):
     cursor = db.cursor()
-    args = ','.join(map(str, list(args)))
-    where = ""
-    i = 0
-    for key,value in kwargs.items():
-        where += key + " = " + str(value)
-        if i < len(kwargs.keys()) - 1:
-            where += " AND "
-        i += 1
-    sql = "SELECT * FROM {table_name} WHERE {where}".format(table_name=table_name, where=where)
-    if args:
-        sql = "SELECT {select} FROM {table_name} WHERE {where}".format(select=args,table_name=table_name, where=where)
-    cursor.execute(sql)
-    msg = cursor.fetchall()
-    if msg == 0:
-        msg = False
+    msg = None
+    where_text = "WHERE"
+    if "column" not in kwargs:
+        kwargs["column"] = "*"
+    if "where" not in kwargs:
+        where_text = ""
+        kwargs["where"] = ""
+    sql = "SELECT {column} FROM {table_name} {where_text} {where}".format(column=kwargs["column"], table_name=table_name, where_text=where_text,where=kwargs["where"])
+    try:
+        cursor.execute(sql)
+        msg = cursor.fetchall()
+    except:
+        db.rollback()
+        print(table_name, sys.exc_info())
     return msg
 
 def insert(table_name,**kwargs):
