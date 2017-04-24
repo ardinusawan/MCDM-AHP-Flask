@@ -115,28 +115,28 @@ def get_CPU_Percentage(con):
     return (cpupercentage * 100)
 
 def stats():
-    with app.app_context():
-        database.create_table()
-        list = client.containers.list()
-        if not list:
-            return False
+    # with app.app_context():
+    database.create_table()
+    list = client.containers.list()
+    if not list:
+        return False
 
-        now = datetime.datetime.now()
-        for c in list:
-            if "moodle" in c.name:
-                # print("Container Name:",c.name)
-                con = client.containers.get(c.short_id)
-                cpu_percentage = get_CPU_Percentage(con)
-                memory_percentage, memory_mb = get_Memory_Data(con)
-                LTA_percentage, LTA_datetime = get_LTA_Data(con)
+    now = datetime.datetime.now()
+    for c in list:
+        if "moodle" in c.name:
+            # print("Container Name:",c.name)
+            con = client.containers.get(c.short_id)
+            cpu_percentage = get_CPU_Percentage(con)
+            memory_percentage, memory_mb = get_Memory_Data(con)
+            LTA_percentage, LTA_datetime = get_LTA_Data(con)
 
-                data_container = {"container_id":con.short_id, "name":con.name, "status":con.status, "now":now}
-                data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
-                status = database.insert_containers(**data_container)
-                if status:
-                    database.insert_stats(**data_stats)
-        ahp_score()
-        return True
+            data_container = {"container_id":con.short_id, "name":con.name, "status":con.status, "now":now}
+            data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
+            status = database.insert_containers(**data_container)
+            if status:
+                database.insert_stats(**data_stats)
+    ahp_score()
+    return True
 
 def ahp_score(**kwargs):
     score = ahp.final_score()
@@ -157,7 +157,8 @@ def ahp_score(**kwargs):
     # value = "".join(str(list(value)).strip('[]'))
 
     table_name = "result"
-    kwargs["mode"] = "INSERT IGNORE"
+    if app.debug:
+        kwargs["mode"] = "REPLACE"
     msg = database.insert(table_name,**kwargs)
     if msg:
         return score
