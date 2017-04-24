@@ -3,6 +3,8 @@ import math
 import db as database
 import pprint
 
+from flask import jsonify
+
 pp = pprint.PrettyPrinter()
 
 
@@ -17,6 +19,12 @@ def get_container(**kwargs):
     data = database.all_data("containers", **kwargs)
     return data
 
+
+def status():
+    if database.total_data("containers") == 0:
+        return False
+    else:
+        return True
 
 # langkah 1
 # data = np.array(
@@ -87,6 +95,8 @@ def rating_of_each_node(*args, **kwargs):
 
 
 def rating_of_each_node(*args, **kwargs):
+    if not status():
+        return False
     params = ''.join(args)
     if params == "CPU":
         params = 3
@@ -95,36 +105,45 @@ def rating_of_each_node(*args, **kwargs):
     elif params == "LTA":
         params = 7
     table_name = "containers"
+    timestamps_position = 3
     total = database.total_data(table_name)
     kwargs["sort"] = {"column": "name", "order": "ASD"}
     data = database.all_data(table_name, **kwargs)
 
     temp = np.zeros(total)
     sum = 0
-    for i in range(total):
+    for i in range(0,total):
         # mendapatkan data terakhir pada stats
-        ts = "'" + data[i][3].strftime('%Y-%m-%d %H:%M:%S') + "'"
-        container_id = "'" + data[i][0] + "'"
-        find_by = {"container_id": container_id, "timestamps": ts}
-        res = database.find_data("stats", **find_by)
+        ts = '{}'.format(data[i][timestamps_position].strftime('%Y-%m-%d %H:%M:%S'))
+        container_id = '{}'.format(data[i][0])
+        kwargs["where"] = "container_id = '{container_id}' AND timestamps = '{timestamps}'".format(container_id=container_id,timestamps=ts)
+        # find_by = {"container_id": container_id, "timestamps": ts}
+        res = database.select("stats", **kwargs)
+        if len(res) == 0:
+            # print(jsonify({"status":"error"},{"message":"Not found data in stats"}))
+            break
+        else:
+            sum += res[0][params]
 
-        sum += res[0][params]
-
-    for j in range(total):
-        ts = "'" + data[j][3].strftime('%Y-%m-%d %H:%M:%S') + "'"
-        container_id = "'" + data[j][0] + "'"
-        find_by = {"container_id": container_id, "timestamps": ts}
-        res = database.find_data("stats", **find_by)
+    for j in range(0,total):
+        ts = '{}'.format(data[j][timestamps_position].strftime('%Y-%m-%d %H:%M:%S'))
+        container_id = '{}'.format(data[j][0])
+        kwargs["where"] = "container_id = '{container_id}' AND timestamps = '{timestamps}'".format(container_id=container_id,timestamps=ts)
+        res = database.select("stats", **kwargs)
+        if len(res) == 0:
+            # print(jsonify({"status":"error"},{"message":"Not found data in stats"}))
+            break
         if sum == 0:
             temp[j] = 0
         else:
             temp[j] = res[0][params] / sum
     return temp
 
+
 def final_score():
+    if not status():
+        return False
     containers_total = database.total_data("containers")
-    if containers_total == 0:
-        return None
     parameter_total = database.total_data("parameter")
 
     option = weight_of_criteria()
@@ -138,22 +157,22 @@ def final_score():
     calculate = "CPU"
     node[2] = rating_of_each_node(*calculate)
 
-    for i in range(0,containers_total):
-        for j in range(0,parameter_total):
+    for i in range(0, containers_total):
+        for j in range(0, parameter_total):
             score[i] += node[j][i] * option[j]
 
     container = []
     for item in get_container():
         container.append(str(item[0]))
 
-    result = dict(zip(container,score))
+    result = dict(zip(container, score))
     container_selected = max(result, key=lambda key: result[key])
     # print("Last Score for each node:")
     # pp.pprint(data)
     # print("Best container to kill:",container_selected)
     text = "selected"
     params = ''.join(text)
-    container_selected = {params:container_selected}
+    container_selected = {params: container_selected}
 
     text = "result"
     params = ''.join(text)
