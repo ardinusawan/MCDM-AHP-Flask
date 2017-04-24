@@ -23,7 +23,7 @@ def create_table():
     if status == 0:
         cursor.execute(containers)
     else:
-        truncate(containers)
+        truncate("containers")
         # print("Table containers is already, skip..")
 
     stats = """
