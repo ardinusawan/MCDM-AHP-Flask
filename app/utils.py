@@ -1,23 +1,29 @@
+import functools
+
 import docker
 import logging
 import pytz
 import datetime
-import db as database
+import hashlib
 from flask import Flask
 import ahp as ahp
+import db as database
+
 app = Flask(__name__)
 
-delay = 60 #minute
+delay = 60  # minute
 
 local_tz = pytz.timezone('Asia/Jakarta')
 
 client = docker.from_env()
 
+
 def utc_to_local(utc_dt):
     local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-    return local_tz.normalize(local_dt) # .normalize might be unnecessary
+    return local_tz.normalize(local_dt)  # .normalize might be unnecessary
 
-#LTA: last time access
+
+# LTA: last time access
 def get_LTA_Data(con):
     conName = con.name
     timepercentage = 0.0
@@ -44,9 +50,9 @@ def get_LTA_Data(con):
         date_now = utc_to_local(date_now)
         difference_date = date_now - date_last_access
         difference_date = difference_date.total_seconds()
-        day = 86400 # seconds
+        day = 86400  # seconds
 
-        timepercentage = difference_date/day * 100
+        timepercentage = difference_date / day * 100
     else:
         con_log = "No Data"
 
@@ -54,6 +60,7 @@ def get_LTA_Data(con):
         return timepercentage, date_last_access.replace(tzinfo=None)
     else:
         return con_log
+
 
 def get_Memory_Data(con):
     conName = con.name
@@ -67,10 +74,11 @@ def get_Memory_Data(con):
     constat = con.stats(stream=False)
     usage = constat['memory_stats']['usage']
     limit = constat['memory_stats']['limit']
-    usage_mb = usage/(1024*1024)
-    limit_mb = limit/(1024*1024)
-    memorypercentage = usage_mb/limit_mb * 100
+    usage_mb = usage / (1024 * 1024)
+    limit_mb = limit / (1024 * 1024)
+    memorypercentage = usage_mb / limit_mb * 100
     return memorypercentage, usage_mb
+
 
 def get_CPU_Percentage(con):
     conName = con.name
@@ -95,7 +103,7 @@ def get_CPU_Percentage(con):
     stats_totalusage = cpustats['cpu_usage']['total_usage']
     numOfCPUCore = len(cpustats['cpu_usage']['percpu_usage'])
     logging.debug('prestats_totalusage: %s, stats_totalusage: %s, NoOfCore: %s' % (
-    prestats_totalusage, stats_totalusage, numOfCPUCore))
+        prestats_totalusage, stats_totalusage, numOfCPUCore))
 
     prestats_syscpu = prestats['system_cpu_usage']
     stats_syscpu = cpustats['system_cpu_usage']
@@ -114,7 +122,8 @@ def get_CPU_Percentage(con):
 
     return (cpupercentage * 100)
 
-def stats():
+
+def stats(**kwargs):
     # with app.app_context():
     database.create_table()
     list = client.containers.list()
@@ -130,25 +139,44 @@ def stats():
             memory_percentage, memory_mb = get_Memory_Data(con)
             LTA_percentage, LTA_datetime = get_LTA_Data(con)
 
-            data_container = {"container_id":con.short_id, "name":con.name, "status":con.status, "now":now}
-            data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
-            status = database.insert_containers(**data_container)
+            if app.debug:
+                kwargs["mode"] = "REPLACE"
+            kwargs["params"] = "container_id, name, status, timestamps"
+            kwargs["value"] = "'{short_id}', '{name}', '{status}', '{timestamps}'".format(short_id=con.short_id, name=con.name,
+                                                                                  status=con.status, timestamps=now.strftime("%Y-%m-%d %H:%M:%S"))
+            # data_container = {"container_id":con.short_id, "name":con.name, "status":con.status, "now":now}
+            # data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
+            # status = database.insert("containers",**kwargs)
+            status = database.insert("containers",**kwargs)
             if status:
-                database.insert_stats(**data_stats)
-    ahp_score()
+                if app.debug:
+                    kwargs["mode"] = "INSERT IGNORE"
+                id = con.short_id + now.strftime("%s")
+                kwargs[
+                    "params"] = "id, container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps"
+                kwargs[
+                    "value"] = "'{id}', '{container_id}', '{container_name}', '{cpu}', '{memory}', '{memory_percentage}', '{last_time_access}', '{last_time_access_percentage}', '{timestamps}'".format(
+                    id=id,container_id=con.short_id, container_name=con.name, cpu=cpu_percentage, memory=memory_mb,
+                    memory_percentage=memory_percentage, last_time_access=LTA_datetime,
+                    last_time_access_percentage=LTA_percentage, timestamps=now)
+                database.insert("stats",**kwargs)
+    if database.total_data("containers") != 0:
+        ahp_score()
     return True
+
 
 def ahp_score(**kwargs):
     score = ahp.final_score()
-
+    if not score:
+        return False
     find_by = {"container_id": "'" + score["selected"] + "'"}
     select = ['timestamps']
-    ts = database.find_data("containers",*select, **find_by)
+    ts = database.find_data("containers", *select, **find_by)
     ts = "'" + ts[0][0].strftime("%Y-%m-%d %H:%M:%S") + "'"
 
     kwargs["params"] = "container_id, score, timestamps"
     temp = str(score["result"].get(score["selected"]))
-    kwargs["value"] = ["'" + score["selected"] + "'","'" + temp + "'", ts]
+    kwargs["value"] = ["'" + score["selected"] + "'", "'" + temp + "'", ts]
     kwargs["value"] = ', '.join(map(str, list(kwargs["value"])))
 
     # key = score["result"].keys()
@@ -159,7 +187,7 @@ def ahp_score(**kwargs):
     table_name = "result"
     if app.debug:
         kwargs["mode"] = "REPLACE"
-    msg = database.insert(table_name,**kwargs)
+    msg = database.insert(table_name, **kwargs)
     if msg:
         return score
     else:
