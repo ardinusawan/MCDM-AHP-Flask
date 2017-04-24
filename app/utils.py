@@ -150,7 +150,7 @@ def stats(**kwargs):
             status = database.insert("containers",**kwargs)
             if status:
                 if app.debug:
-                    kwargs["mode"] = "INSERT IGNORE"
+                    kwargs["mode"] = "REPLACE"
                 id = con.short_id + now.strftime("%s")
                 kwargs[
                     "params"] = "id, container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps"
@@ -169,9 +169,14 @@ def ahp_score(**kwargs):
     score = ahp.final_score()
     if not score:
         return False
-    find_by = {"container_id": "'" + score["selected"] + "'"}
-    select = ['timestamps']
-    ts = database.find_data("containers", *select, **find_by)
+    if "status" in score:
+        return score["message"]
+    # find_by = {"container_id": "'" + score["selected"] + "'"}
+    # select = ['timestamps']
+    kwargs["column"] = "timestamps"
+    kwargs["where"] = "container_id = '{container_id}'".format(
+        container_id=score["selected"])
+    ts = database.select("containers", **kwargs)
     ts = "'" + ts[0][0].strftime("%Y-%m-%d %H:%M:%S") + "'"
 
     kwargs["params"] = "container_id, score, timestamps"
