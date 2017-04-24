@@ -213,7 +213,9 @@ def find_data(table_name, *args, **kwargs):
 
 def insert(table_name,**kwargs):
     cursor = db.cursor()
-    sql = "{mode} {table_name} ({params}) VALUES ({values})".format(mode=kwargs["mode"],table_name=table_name,
+    if "mode" not in kwargs:
+        kwargs["mode"] = "INSERT"
+    sql = "{mode} INTO {table_name} ({params}) VALUES ({values})".format(mode=kwargs["mode"],table_name=table_name,
                                                                                 params=kwargs["params"],
                                                                                 values=kwargs["value"])
     try:
