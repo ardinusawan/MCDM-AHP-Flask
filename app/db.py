@@ -25,7 +25,7 @@ def create_table():
 
     stats = """
     CREATE TABLE IF NOT EXISTS stats (
-        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        id VARCHAR(255) NOT NULL PRIMARY KEY,
         container_id VARCHAR(255),
         container_name VARCHAR(255),
         cpu INT,
@@ -223,7 +223,7 @@ def insert(table_name,**kwargs):
         db.commit()
     except:
         db.rollback()
-        print(sys.exc_info())
+        print(table_name,sys.exc_info())
         return False
     finally:
         return True
