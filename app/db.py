@@ -4,6 +4,9 @@ import sys
 
 db = MySQLdb.connect("localhost", "root", "Asddsaa1", "MCDM-AHP")
 
+def truncate(table_name):
+    cursor = db.cursor()
+    cursor.execute("TRUNCATE TABLE {}".format(table_name))
 
 # create table if not exist
 def create_table():
@@ -20,7 +23,7 @@ def create_table():
     if status == 0:
         cursor.execute(containers)
     else:
-        cursor.execute("TRUNCATE TABLE containers")
+        truncate(containers)
         # print("Table containers is already, skip..")
 
     stats = """
@@ -126,7 +129,7 @@ def insert_comparison_matrix(parameter_data, **kwargs):
     status = False
     create_table()
 
-    cursor.execute("TRUNCATE TABLE parameter")
+    truncate("parameter")
     for i in range(len(parameter_data)):
         try:
             cursor.execute(
@@ -141,7 +144,7 @@ def insert_comparison_matrix(parameter_data, **kwargs):
         finally:
             status = True
 
-    cursor.execute("TRUNCATE TABLE comparison_matrix")
+    truncate("comparison_matrix")
     for key, value in kwargs.items():
         print(key, value)
         try:
