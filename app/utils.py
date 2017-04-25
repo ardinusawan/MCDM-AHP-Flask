@@ -169,8 +169,8 @@ def ahp_score(**kwargs):
     score = ahp.final_score()
     if not score:
         return False
-    if "status" in score:
-        return score["message"]
+    # if "status" in score:
+    #     return score["message"]
     # find_by = {"container_id": "'" + score["selected"] + "'"}
     # select = ['timestamps']
     kwargs["column"] = "timestamps"
