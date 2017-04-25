@@ -23,11 +23,10 @@ def weight_of_criteria(*args,**kwargs):
     result = result.join(CPU)
     return result
 
-#name
 def rating_each_node(column_name,*args,**kwargs):
     name = column_name
     print("{} rating".format(name))
-    # langkah2
+
     # 1. mendapatkan semua data CPU, memory, LTA, cari terendah dan tertinggi, bagi 9 kolom
     kwargs["column"] = "container_id, timestamps, name"
     kwargs["where"] = "status = 'running'"
@@ -86,12 +85,12 @@ def rating_each_node(column_name,*args,**kwargs):
             # cpu_matrix = cpu_matrix.where(np.triu(np.ones(cpu_matrix.shape)))
             # cpu_matrix = cpu_matrix.transpose()
 
-    # 4. untuk setiap row, cari nilai geomean dan eigenvector
+    # 4. untuk setiap row, hitung nilai geomean dan eigenvector
     data_matrix["3rd root of product"] = data_matrix.product(axis=1) ** (1 / 3)
     data_matrix["priority vector"] = data_matrix["3rd root of product"] / data_matrix["3rd root of product"].sum()
-    print(data_matrix, "\n")
+    # print(data_matrix, "\n")
+    return data_matrix
 
-
-rating_each_node("cpu")
-rating_each_node("memory")
-rating_each_node("last_time_access_percentage")
+print(rating_each_node("cpu"),"\n")
+print(rating_each_node("memory"),"\n")
+print(rating_each_node("last_time_access_percentage"),"\n")
