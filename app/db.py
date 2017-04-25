@@ -81,48 +81,6 @@ def create_table():
     # else:
     #     print("Table result is already, skip..")
 
-
-# def insert_containers(container_id, name, status, now):
-#     cursor = db.cursor()
-#     sql = "SELECT container_id FROM containers WHERE container_id = '%s'" % container_id
-#     msg = cursor.execute(sql)
-#     if msg == 0:
-#         sql = "INSERT INTO containers (container_id, name, status, timestamps) VALUES ('%s','%s','%s','%s')" % \
-#               (container_id, name, status, now)
-#     elif msg == 1:
-#         sql = "UPDATE containers SET name='%s', status='%s', timestamps='%s' WHERE container_id = '%s'" % \
-#               (name, status, now, container_id)
-#     try:
-#         cursor.execute(sql)
-#         db.commit()
-#     except:
-#         db.rollback()
-#         print(sys.exc_info())
-#         return False
-#     finally:
-#         return True
-
-
-# def insert_stats(container_id, container_name, cpu, memory, memory_percentage, last_time_access,
-#                  last_time_access_percentage, ts):
-#     cursor = db.cursor()
-#     try:
-#         cursor.execute(
-#             "INSERT INTO stats (container_id,container_name,cpu,memory, memory_percentage, last_time_access,"
-#             "last_time_access_percentage,timestamps) values ('%s','%s','%f','%f','%f','%s','%f','%s')" % \
-#             (
-#                 container_id, container_name, cpu, memory, memory_percentage, last_time_access,
-#                 last_time_access_percentage,
-#                 ts))
-#         db.commit()
-#     except:
-#         db.rollback()
-#         print(sys.exc_info())
-#         return False
-#     finally:
-#         return True
-
-
 def insert_comparison_matrix(parameter_data, **kwargs):
     ts = datetime.datetime.now()
     cursor = db.cursor()
@@ -187,40 +145,6 @@ def total_data(table_name,**kwargs):
     msg = msg[0]
     return msg
 
-# def all_data(table_name,**kwargs):
-#     cursor = db.cursor()
-#     sql = "SELECT * FROM {table_name}" .format(table_name=table_name)
-#     if "select" in kwargs:
-#         sql = "SELECT {column} FROM {table}".format(column=kwargs["select"]["data"],table=table_name)
-#     if "sort" in kwargs:
-#         temp = " ORDER BY {}" .format(kwargs["sort"]['column'],kwargs["sort"]['order'])
-#         sql = sql + temp
-#
-#     cursor.execute(sql)
-#     msg = cursor.fetchall()
-#     return msg
-
-# def find_data(table_name, *args, **kwargs):
-#     cursor = db.cursor()
-#     args = ','.join(map(str, list(args)))
-#     where = ""
-#     msg = ""
-#     i = 0
-#     for key,value in kwargs.items():
-#         where += key + " = " + str(value)
-#         if i < len(kwargs.keys()) - 1:
-#             where += " AND "
-#         i += 1
-#     sql = "SELECT * FROM {table_name} WHERE {where}".format(table_name=table_name, where=where)
-#     if args:
-#         sql = "SELECT {select} FROM {table_name} WHERE {where}".format(select=args,table_name=table_name, where=where)
-#     try:
-#         cursor.execute(sql)
-#         msg = cursor.fetchall()
-#     except:
-#         db.rollback()
-#         print(table_name, sys.exc_info())
-#     return msg
 
 def select(table_name,*args,**kwargs):
     cursor = db.cursor()
