@@ -120,17 +120,6 @@ def insert_comparison_matrix(parameter_data, **kwargs):
     return status
 
 
-def last_data(tableName, **kwargs):
-    cursor = db.cursor()
-    sql = "SELECT * FROM %s WHERE %s = '%s' ORDER BY timestamps DESC LIMIT 1;" % \
-          (tableName, kwargs["column"], kwargs["value"])
-    cursor.execute(sql)
-    msg = cursor.fetchone()
-    if msg == 0:
-        msg = False
-    return msg
-
-
 def total_data(table_name,**kwargs):
     cursor = db.cursor()
     where_text = "WHERE"
