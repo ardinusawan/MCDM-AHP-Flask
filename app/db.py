@@ -227,10 +227,7 @@ def select(table_name,*args,**kwargs):
     msg = None
     where_text = "WHERE"
     between = ""
-    if "between" not in kwargs:
-        between_text = ""
-        kwargs["between"] = ""
-    elif "between" in kwargs:
+    if "between" in kwargs:
         between = "AND {between} BETWEEN {from_date} AND {to_date}".format(between=kwargs["between"],
                                                                                 from_date=args[0],
                                                                                 to_date=args[1])
