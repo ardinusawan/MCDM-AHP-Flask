@@ -187,18 +187,18 @@ def total_data(table_name,**kwargs):
     msg = msg[0]
     return msg
 
-def all_data(table_name,**kwargs):
-    cursor = db.cursor()
-    sql = "SELECT * FROM {table_name}" .format(table_name=table_name)
-    if "select" in kwargs:
-        sql = "SELECT {column} FROM {table}".format(column=kwargs["select"]["data"],table=table_name)
-    if "sort" in kwargs:
-        temp = " ORDER BY {}" .format(kwargs["sort"]['column'],kwargs["sort"]['order'])
-        sql = sql + temp
-
-    cursor.execute(sql)
-    msg = cursor.fetchall()
-    return msg
+# def all_data(table_name,**kwargs):
+#     cursor = db.cursor()
+#     sql = "SELECT * FROM {table_name}" .format(table_name=table_name)
+#     if "select" in kwargs:
+#         sql = "SELECT {column} FROM {table}".format(column=kwargs["select"]["data"],table=table_name)
+#     if "sort" in kwargs:
+#         temp = " ORDER BY {}" .format(kwargs["sort"]['column'],kwargs["sort"]['order'])
+#         sql = sql + temp
+#
+#     cursor.execute(sql)
+#     msg = cursor.fetchall()
+#     return msg
 
 # def find_data(table_name, *args, **kwargs):
 #     cursor = db.cursor()
@@ -220,18 +220,30 @@ def all_data(table_name,**kwargs):
 #     except:
 #         db.rollback()
 #         print(table_name, sys.exc_info())
-    return msg
+#     return msg
 
-def select(table_name,**kwargs):
+def select(table_name,*args,**kwargs):
     cursor = db.cursor()
     msg = None
     where_text = "WHERE"
+    between = ""
+    if "between" not in kwargs:
+        between_text = ""
+        kwargs["between"] = ""
+    elif "between" in kwargs:
+        between = "AND {between} BETWEEN {from_date} AND {to_date}".format(between=kwargs["between"],
+                                                                                from_date=args[0],
+                                                                                to_date=args[1])
     if "column" not in kwargs:
         kwargs["column"] = "*"
     if "where" not in kwargs:
         where_text = ""
         kwargs["where"] = ""
-    sql = "SELECT {column} FROM {table_name} {where_text} {where}".format(column=kwargs["column"], table_name=table_name, where_text=where_text,where=kwargs["where"])
+    sql = "SELECT {column} FROM {table_name} {where_text} {where} {between}".format(column=kwargs["column"],
+                                                                                    table_name=table_name,
+                                                                                    where_text=where_text,
+                                                                                    where=kwargs["where"],
+                                                                                    between=between)
     try:
         cursor.execute(sql)
         msg = cursor.fetchall()
