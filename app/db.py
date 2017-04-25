@@ -173,10 +173,15 @@ def last_data(tableName, **kwargs):
     return msg
 
 
-def total_data(table_name):
+def total_data(table_name,**kwargs):
     cursor = db.cursor()
-    sql = "SELECT COUNT(*) FROM %s ;" % \
-          table_name
+    where_text = "WHERE"
+    if "where" not in kwargs:
+        where_text = ""
+        kwargs["where"] = ""
+    sql = "SELECT COUNT(*) FROM {table_name} {where_text} {where} ;".format(table_name=table_name,
+                                                                            where_text=where_text,
+                                                                            where=kwargs["where"])
     cursor.execute(sql)
     msg = cursor.fetchone()
     msg = msg[0]
