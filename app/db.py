@@ -227,6 +227,7 @@ def select(table_name,*args,**kwargs):
     msg = None
     where_text = "WHERE"
     between = ""
+    sort = ""
     if "between" in kwargs:
         between = "AND {between} BETWEEN {from_date} AND {to_date}".format(between=kwargs["between"],
                                                                                 from_date=args[0],
@@ -236,11 +237,14 @@ def select(table_name,*args,**kwargs):
     if "where" not in kwargs:
         where_text = ""
         kwargs["where"] = ""
-    sql = "SELECT {column} FROM {table_name} {where_text} {where} {between}".format(column=kwargs["column"],
+    if "sort" in kwargs:
+        sort = "ORDER BY {}" .format(kwargs["sort"])
+    sql = "SELECT {column} FROM {table_name} {where_text} {where} {between} {sort}".format(column=kwargs["column"],
                                                                                     table_name=table_name,
                                                                                     where_text=where_text,
                                                                                     where=kwargs["where"],
-                                                                                    between=between)
+                                                                                    between=between,
+                                                                                    sort=sort)
     try:
         cursor.execute(sql)
         msg = cursor.fetchall()
