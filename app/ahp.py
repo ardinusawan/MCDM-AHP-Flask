@@ -27,9 +27,8 @@ def weight_of_criteria(*args,**kwargs):
         for idy, column in enumerate(data_matrix.columns.values):
             for i in range(len(c_key)):
                 if c_key[i].split("/")[0] == row.lower() and c_key[i].split("/")[1] == column.lower():
-                    params = c_key[i].split("/")[0] + '/' + c_key[i].split("/")[1]
-                    data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = comparison[params]
-                    data_matrix.iloc[data_matrix.index.get_loc(column), data_matrix.columns.get_loc(row)] = 1 / int(comparison[params])
+                    data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = comparison[c_key[i]]
+                    data_matrix.iloc[data_matrix.index.get_loc(column), data_matrix.columns.get_loc(row)] = 1 / int(comparison[c_key[i]])
                     break
                 if column == row:
                     data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = 1
