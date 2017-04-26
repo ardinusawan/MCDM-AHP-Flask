@@ -140,7 +140,7 @@ def stats(**kwargs):
                 kwargs["mode"] = "REPLACE"
             kwargs["params"] = "container_id, name, status, timestamps"
             kwargs["value"] = "'{short_id}', '{name}', '{status}', '{timestamps}'".format(short_id=con.short_id, name=con.name,
-                                                                                  status=con.status, timestamps=now.strftime("%Y-%m-%d %H:%M:%S"))
+                                                                                  status=con.status, timestamps=now)
             status = database.insert("containers",**kwargs)
             if status:
                 if app.debug:
