@@ -1,8 +1,31 @@
 import MySQLdb
 import datetime
 import sys
+import os
 
-db = MySQLdb.connect("localhost", "root", "Asddsaa1", "MCDM-AHP")
+import configparser
+
+def config():
+    full_path = os.path.realpath(__file__)
+    dir_path = os.path.dirname(full_path)
+    dir_path = dir_path + '/'
+
+    settings = configparser.ConfigParser()
+    settings._interpolation = configparser.ExtendedInterpolation()
+    settings.read(dir_path + 'config.ini')
+
+    data = dict()
+    data["mysql"] = dict()
+    data["mysql"]["host"] = settings.get('mysql', 'host')
+    data["mysql"]["username"] = settings.get('mysql', 'username')
+    data["mysql"]["password"] = settings.get('mysql', 'password')
+    data["mysql"]["database"] = settings.get('mysql', 'database')
+    return data
+
+db = MySQLdb.connect(config()["mysql"]["host"],
+                     config()["mysql"]["username"],
+                     config()["mysql"]["password"],
+                     config()["mysql"]["database"])
 
 def truncate(table_name):
     cursor = db.cursor()
