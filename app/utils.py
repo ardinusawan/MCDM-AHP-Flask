@@ -1,10 +1,7 @@
-import functools
-
 import docker
 import logging
 import pytz
 import datetime
-import hashlib
 from flask import Flask
 import ahp as ahp
 import db as database
@@ -144,9 +141,6 @@ def stats(**kwargs):
             kwargs["params"] = "container_id, name, status, timestamps"
             kwargs["value"] = "'{short_id}', '{name}', '{status}', '{timestamps}'".format(short_id=con.short_id, name=con.name,
                                                                                   status=con.status, timestamps=now.strftime("%Y-%m-%d %H:%M:%S"))
-            # data_container = {"container_id":con.short_id, "name":con.name, "status":con.status, "now":now}
-            # data_stats = {"container_id":con.short_id, "container_name":con.name, "cpu":cpu_percentage,"memory":memory_mb, "memory_percentage":memory_percentage, "last_time_access":LTA_datetime, "last_time_access_percentage":LTA_percentage, "ts":now}
-            # status = database.insert("containers",**kwargs)
             status = database.insert("containers",**kwargs)
             if status:
                 if app.debug:
@@ -166,34 +160,8 @@ def stats(**kwargs):
 
 
 def ahp_score(**kwargs):
-    score = ahp.final_score()
-    if not score:
-        return False
-    # if "status" in score:
-    #     return score["message"]
-    # find_by = {"container_id": "'" + score["selected"] + "'"}
-    # select = ['timestamps']
-    kwargs["column"] = "timestamps"
-    kwargs["where"] = "container_id = '{container_id}'".format(
-        container_id=score["selected"])
-    ts = database.select("containers", **kwargs)
-    ts = "'" + ts[0][0].strftime("%Y-%m-%d %H:%M:%S") + "'"
-
     kwargs["params"] = "container_id, score, timestamps"
-    temp = str(score["result"].get(score["selected"]))
-    kwargs["value"] = ["'" + score["selected"] + "'", "'" + temp + "'", ts]
-    kwargs["value"] = ', '.join(map(str, list(kwargs["value"])))
-
-    # key = score["result"].keys()
-    # key = "".join(str(list(key)).strip('[]'))
-    # value = score["result"].values()
-    # value = "".join(str(list(value)).strip('[]'))
-
-    table_name = "result"
-    if app.debug:
-        kwargs["mode"] = "REPLACE"
-    msg = database.insert(table_name, **kwargs)
-    if msg:
-        return score
-    else:
-        return False
+    kwargs["value"] = "'{max}', '{score}', '{timestamps}'".format(max=ahp.score()["max"],
+                                                                  score=ahp.score()["result"][ahp.score()["max"]],
+                                                                  timestamps=ahp.score()["ts"])
+    database.insert("result",**kwargs)
