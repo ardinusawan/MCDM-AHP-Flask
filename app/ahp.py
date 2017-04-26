@@ -103,13 +103,10 @@ def rating_each_node(column_name,*args,**kwargs):
             else:
                 tz = tx / ty
             data_matrix.loc[row, column] = tz
-            # cpu_matrix = cpu_matrix.where(np.triu(np.ones(cpu_matrix.shape)))
-            # cpu_matrix = cpu_matrix.transpose()
 
     # 4. untuk setiap row, hitung nilai geomean dan eigenvector
     data_matrix["3rd root of product"] = data_matrix.product(axis=1) ** (1 / database.total_data("containers"))
     data_matrix["priority vector"] = data_matrix["3rd root of product"] / data_matrix["3rd root of product"].sum()
-    # print(data_matrix, "\n")
     return data_matrix
 
 
@@ -128,8 +125,9 @@ def score():
     score = {"result":score,"max":str(score_max),"min":str(score_min)}
     return score
 
-print(score())
-# print(weight_of_criteria())
-# print(rating_each_node("cpu"),"\n")
-# print(rating_each_node("memory"),"\n")
-# print(rating_each_node("last_time_access_percentage"),"\n")
+
+# print("weight_of_criteria:\n",weight_of_criteria(),"\n")
+# print("cpu:\n", rating_each_node("cpu"),"\n")
+# print("memory:\n", rating_each_node("memory"),"\n")
+# print("lta:\n", rating_each_node("last_time_access_percentage"),"\n")
+# print("score:\n",score())
