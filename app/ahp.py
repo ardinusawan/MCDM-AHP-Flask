@@ -6,8 +6,8 @@ import pandas as pd
 pp = pprint.PrettyPrinter()
 
 
-def containers(**kwargs):
-    kwargs["column"] = "name"
+def containers(column,**kwargs):
+    kwargs["column"] = column
     kwargs["where"] = "status = 'running'"
     kwargs["sort"] = "name"
     data = database.select("containers", **kwargs)
@@ -116,13 +116,14 @@ def score():
     lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage")["priority vector"])
 
     c_score = cpu_dot_wc + mem_dot_wc + lta_dot_wc
-    c_name = list(map(list, containers()))
+    c_name = list(map(list, containers("container_id")))
+    c_ts = list(map(list, containers("timestamps")))[0][0].strftime("%Y-%m-%d %H:%M:%S")
     c_name = [x[0] for x in c_name]
     score = dict(zip(c_name,c_score))
     score_max = max(score, key=score.get)
     score_min = min(score, key=score.get)
 
-    score = {"result":score,"max":str(score_max),"min":str(score_min)}
+    score = {"result":score,"max":str(score_max),"min":str(score_min),"ts":c_ts}
     return score
 
 
