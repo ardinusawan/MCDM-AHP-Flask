@@ -1,10 +1,18 @@
 import numpy as np
-import math
 import db as database
 import pprint
 import pandas as pd
 
 pp = pprint.PrettyPrinter()
+
+
+def containers(**kwargs):
+    kwargs["column"] = "name"
+    kwargs["where"] = "status = 'running'"
+    kwargs["sort"] = "name"
+    data = database.select("containers", **kwargs)
+    return data
+
 
 def weight_of_criteria(*args,**kwargs):
     # read from cfg file
@@ -27,11 +35,11 @@ def weight_of_criteria(*args,**kwargs):
         for idy, column in enumerate(data_matrix.columns.values):
             for i in range(len(c_key)):
                 if c_key[i].split("/")[0] == row.lower() and c_key[i].split("/")[1] == column.lower():
-                    data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = comparison[c_key[i]]
-                    data_matrix.iloc[data_matrix.index.get_loc(column), data_matrix.columns.get_loc(row)] = 1 / int(comparison[c_key[i]])
+                    data_matrix.loc[row, column] = comparison[c_key[i]]
+                    data_matrix.loc[column, row] = 1 / int(comparison[c_key[i]])
                     break
             if column == row:
-                data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = 1
+                data_matrix.loc[row, column] = 1
     data_matrix["3rd root of product"] = data_matrix.product(axis=1) ** (1 / len(parameter))
     data_matrix["priority vector"] = data_matrix["3rd root of product"] / data_matrix["3rd root of product"].sum()
     return data_matrix
@@ -39,8 +47,7 @@ def weight_of_criteria(*args,**kwargs):
 
 def rating_each_node(column_name,*args,**kwargs):
     name = column_name
-    print("{} rating".format(name))
-
+    # print("{} rating".format(name))
     # 1. mendapatkan semua data CPU, memory, LTA, cari terendah dan tertinggi, bagi 9 kolom
     kwargs["column"] = "container_id, timestamps, name"
     kwargs["where"] = "status = 'running'"
@@ -95,7 +102,7 @@ def rating_each_node(column_name,*args,**kwargs):
                 tz = 1
             else:
                 tz = tx / ty
-            data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = tz
+            data_matrix.loc[row, column] = tz
             # cpu_matrix = cpu_matrix.where(np.triu(np.ones(cpu_matrix.shape)))
             # cpu_matrix = cpu_matrix.transpose()
 
@@ -105,8 +112,24 @@ def rating_each_node(column_name,*args,**kwargs):
     # print(data_matrix, "\n")
     return data_matrix
 
-print(weight_of_criteria())
 
+def score():
+    cpu_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("CPU")],rating_each_node("CPU")["priority vector"])
+    mem_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("Memory")],rating_each_node("Memory")["priority vector"])
+    lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage")["priority vector"])
+
+    c_score = cpu_dot_wc + mem_dot_wc + lta_dot_wc
+    c_name = list(map(list, containers()))
+    c_name = [x[0] for x in c_name]
+    score = dict(zip(c_name,c_score))
+    score_max = max(score, key=score.get)
+    score_min = min(score, key=score.get)
+
+    score = {"result":score,"max":str(score_max),"min":str(score_min)}
+    return score
+
+print(score())
+# print(weight_of_criteria())
 # print(rating_each_node("cpu"),"\n")
 # print(rating_each_node("memory"),"\n")
 # print(rating_each_node("last_time_access_percentage"),"\n")
