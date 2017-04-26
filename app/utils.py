@@ -143,6 +143,7 @@ def stats(**kwargs):
                                                                                   status=con.status, timestamps=now)
             status = database.insert("containers",**kwargs)
             if status:
+                kwargs.clear()
                 if app.debug:
                     kwargs["mode"] = "REPLACE"
                 id = con.short_id + now.strftime("%s")
@@ -155,13 +156,15 @@ def stats(**kwargs):
                     last_time_access_percentage=LTA_percentage, timestamps=now)
                 database.insert("stats",**kwargs)
     if database.total_data("containers") != 0:
-        ahp_score()
+        kwargs.clear()
+        kwargs["params"] = "container_id, score, timestamps"
+        kwargs["value"] = "'{max}', '{score}', '{timestamps}'".format(max=ahp.score()["max"],
+                                                                      score=ahp.score()["result"][ahp.score()["max"]],
+                                                                      timestamps=ahp.score()["ts"])
+        database.insert("result", **kwargs)
     return True
 
 
 def ahp_score(**kwargs):
-    kwargs["params"] = "container_id, score, timestamps"
-    kwargs["value"] = "'{max}', '{score}', '{timestamps}'".format(max=ahp.score()["max"],
-                                                                  score=ahp.score()["result"][ahp.score()["max"]],
-                                                                  timestamps=ahp.score()["ts"])
-    database.insert("result",**kwargs)
+    data = database.select("result", **kwargs)
+    return data
