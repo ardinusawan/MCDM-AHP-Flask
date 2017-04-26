@@ -69,33 +69,6 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'stats'")
     if status == 0:
         cursor.execute(stats)
-    # else:
-        # print("Table stats is already, skip..")
-
-    comparison_matrix = """
-    CREATE TABLE IF NOT EXISTS comparison_matrix (
-        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        comparison VARCHAR(255),
-        value FLOAT,
-        timestamps DATETIME)
-    """
-    status = cursor.execute("SHOW TABLES LIKE 'comparison_matrix'")
-    if status == 0:
-        cursor.execute(comparison_matrix)
-    # else:
-        # print("Table comparison_matrix is already, skip..")
-
-    parameter = """
-        CREATE TABLE IF NOT EXISTS parameter (
-            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255),
-            timestamps DATETIME)
-        """
-    status = cursor.execute("SHOW TABLES LIKE 'parameter'")
-    if status == 0:
-        cursor.execute(parameter)
-    # else:
-    #     print("Table parameter is already, skip..")
 
     result = """
             CREATE TABLE IF NOT EXISTS result (
@@ -108,44 +81,6 @@ def create_table():
         cursor.execute(result)
     # else:
     #     print("Table result is already, skip..")
-
-def insert_comparison_matrix(parameter_data, **kwargs):
-    ts = datetime.datetime.now()
-    cursor = db.cursor()
-    status = False
-    create_table()
-
-    truncate("parameter")
-    for i in range(len(parameter_data)):
-        try:
-            cursor.execute(
-                "INSERT INTO parameter (name ,timestamps) values ('%s','%s')" % \
-                (parameter_data[i], ts))
-            db.commit()
-        except:
-            db.rollback()
-            print(sys.exc_info())
-            status = False
-            break
-        finally:
-            status = True
-
-    truncate("comparison_matrix")
-    for key, value in kwargs.items():
-        print(key, value)
-        try:
-            cursor.execute(
-                "INSERT INTO comparison_matrix (comparison, value ,timestamps) values ('%s','%f','%s')" % \
-                (key, value, ts))
-            db.commit()
-        except:
-            db.rollback()
-            print(sys.exc_info())
-            status = False
-            break
-        finally:
-            status = True
-    return status
 
 
 def total_data(table_name,**kwargs):
