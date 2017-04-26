@@ -5,7 +5,7 @@ import os
 
 import configparser
 
-def config():
+def config(section):
     full_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(full_path)
     dir_path = dir_path + '/'
@@ -15,17 +15,22 @@ def config():
     settings.read(dir_path + 'config.ini')
 
     data = dict()
-    data["mysql"] = dict()
-    data["mysql"]["host"] = settings.get('mysql', 'host')
-    data["mysql"]["username"] = settings.get('mysql', 'username')
-    data["mysql"]["password"] = settings.get('mysql', 'password')
-    data["mysql"]["database"] = settings.get('mysql', 'database')
+    options = settings.options(section)
+    for option in options:
+        try:
+            data[option] = settings.get(section, option)
+            if data[option] == -1:
+                print("skip: %s" % option)
+        except:
+            print("exception on %s!" % option)
+            data[option] = None
     return data
 
-db = MySQLdb.connect(config()["mysql"]["host"],
-                     config()["mysql"]["username"],
-                     config()["mysql"]["password"],
-                     config()["mysql"]["database"])
+
+db = MySQLdb.connect(config("mysql")["host"],
+                     config("mysql")["username"],
+                     config("mysql")["password"],
+                     config("mysql")["database"])
 
 def truncate(table_name):
     cursor = db.cursor()
