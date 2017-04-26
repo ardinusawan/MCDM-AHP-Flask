@@ -3,10 +3,8 @@ import math
 import db as database
 import pprint
 import pandas as pd
-from flask import jsonify
-import re
-pp = pprint.PrettyPrinter()
 
+pp = pprint.PrettyPrinter()
 
 def f(num):
     return math.sqrt(math.sqrt(num))
@@ -14,15 +12,28 @@ def f(num):
 
 def weight_of_criteria(*args,**kwargs):
 
-    Memory_raw = {"Memory":{0:1,1:2, 2:4}}
-    LTA_raw = {"LTA": {0:0.5, 1:1, 2:2}}
-    CPU_raw = {"CPU":{0:0.25,1:0.5, 2:1}}
-    Memory = pd.DataFrame(Memory_raw)
-    LTA = pd.DataFrame(LTA_raw)
-    CPU = pd.DataFrame(CPU_raw)
-    result = Memory.join(LTA)
-    result = result.join(CPU)
-    return result
+    # read from cfg file
+    kwargs["config"] = True
+    data = database.select("parameter", **kwargs)
+    p_name = [x for x in list(data.values())]
+    index = p_name
+    columns = p_name
+    type_data = ['float32'] * len(p_name)
+    dtype = list(zip(p_name, type_data))
+    values = np.zeros(len(p_name), dtype=dtype)
+    data_matrix = pd.DataFrame(values, index=index, columns=columns)
+    print(data_matrix)
+
+
+    # Memory_raw = {"Memory":{0:1,1:2, 2:4}}
+    # LTA_raw = {"LTA": {0:0.5, 1:1, 2:2}}
+    # CPU_raw = {"CPU":{0:0.25,1:0.5, 2:1}}
+    # Memory = pd.DataFrame(Memory_raw)
+    # LTA = pd.DataFrame(LTA_raw)
+    # CPU = pd.DataFrame(CPU_raw)
+    # result = Memory.join(LTA)
+    # result = result.join(CPU)
+    # return result
 weight_of_criteria()
 def rating_each_node(column_name,*args,**kwargs):
     name = column_name
@@ -92,6 +103,6 @@ def rating_each_node(column_name,*args,**kwargs):
     # print(data_matrix, "\n")
     return data_matrix
 
-print(rating_each_node("cpu"),"\n")
+# print(rating_each_node("cpu"),"\n")
 # print(rating_each_node("memory"),"\n")
 # print(rating_each_node("last_time_access_percentage"),"\n")
