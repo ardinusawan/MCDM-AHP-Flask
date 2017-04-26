@@ -6,35 +6,37 @@ import pandas as pd
 
 pp = pprint.PrettyPrinter()
 
-def f(num):
-    return math.sqrt(math.sqrt(num))
-
-
 def weight_of_criteria(*args,**kwargs):
-
     # read from cfg file
     kwargs["config"] = True
-    data = database.select("parameter", **kwargs)
-    p_name = [x for x in list(data.values())]
+    parameter = database.select("parameter", **kwargs)
+    parameter = sorted(parameter.items(), key=lambda x: x[1])
+    p_name = [x[1] for x in parameter]
     index = p_name
     columns = p_name
     type_data = ['float32'] * len(p_name)
     dtype = list(zip(p_name, type_data))
     values = np.zeros(len(p_name), dtype=dtype)
     data_matrix = pd.DataFrame(values, index=index, columns=columns)
+
+    kwargs.clear()
+    kwargs["config"] = True
+    comparison = database.select("comparison", **kwargs)
+    c_key = [x for x in list(comparison.keys())]
+    for idx, row in enumerate(data_matrix.index.values):
+        for idy, column in enumerate(data_matrix.columns.values):
+            for i in range(len(c_key)):
+                if c_key[i].split("/")[0] == row.lower() and c_key[i].split("/")[1] == column.lower():
+                    params = c_key[i].split("/")[0] + '/' + c_key[i].split("/")[1]
+                    data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = comparison[params]
+                    data_matrix.iloc[data_matrix.index.get_loc(column), data_matrix.columns.get_loc(row)] = 1 / int(comparison[params])
+                    break
+                if column == row:
+                    data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = 1
+    data_matrix["3rd root of product"] = data_matrix.product(axis=1) ** (1 / len(parameter))
+    data_matrix["priority vector"] = data_matrix["3rd root of product"] / data_matrix["3rd root of product"].sum()
     print(data_matrix)
 
-
-    # Memory_raw = {"Memory":{0:1,1:2, 2:4}}
-    # LTA_raw = {"LTA": {0:0.5, 1:1, 2:2}}
-    # CPU_raw = {"CPU":{0:0.25,1:0.5, 2:1}}
-    # Memory = pd.DataFrame(Memory_raw)
-    # LTA = pd.DataFrame(LTA_raw)
-    # CPU = pd.DataFrame(CPU_raw)
-    # result = Memory.join(LTA)
-    # result = result.join(CPU)
-    # return result
-weight_of_criteria()
 def rating_each_node(column_name,*args,**kwargs):
     name = column_name
     print("{} rating".format(name))
@@ -67,10 +69,10 @@ def rating_each_node(column_name,*args,**kwargs):
     values = np.zeros(len(c_name), dtype=dtype)
 
     data_matrix = pd.DataFrame(values, index=index, columns=columns)
-    for row in enumerate(data_matrix.index.values):
-        for column in enumerate(data_matrix.columns.values):
-            tx = [item for item in data if item[2] == row[1]][0][1]
-            ty = [item for item in data if item[2] == column[1]][0][1]
+    for idx, row in enumerate(data_matrix.index.values):
+        for idy, column in enumerate(data_matrix.columns.values):
+            tx = [item for item in data if item[2] == row][0][1]
+            ty = [item for item in data if item[2] == column][0][1]
 
             for idx, val in enumerate(data_range[1:len(data_range)]):
                 if (tx >= data_range[idx - 1] and tx < data_range[idx]):
@@ -93,7 +95,7 @@ def rating_each_node(column_name,*args,**kwargs):
                 tz = 1
             else:
                 tz = tx / ty
-            data_matrix.iloc[data_matrix.index.get_loc(row[1]), data_matrix.columns.get_loc(column[1])] = tz
+            data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = tz
             # cpu_matrix = cpu_matrix.where(np.triu(np.ones(cpu_matrix.shape)))
             # cpu_matrix = cpu_matrix.transpose()
 
@@ -102,6 +104,8 @@ def rating_each_node(column_name,*args,**kwargs):
     data_matrix["priority vector"] = data_matrix["3rd root of product"] / data_matrix["3rd root of product"].sum()
     # print(data_matrix, "\n")
     return data_matrix
+
+weight_of_criteria()
 
 # print(rating_each_node("cpu"),"\n")
 # print(rating_each_node("memory"),"\n")
