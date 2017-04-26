@@ -30,11 +30,12 @@ def weight_of_criteria(*args,**kwargs):
                     data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = comparison[c_key[i]]
                     data_matrix.iloc[data_matrix.index.get_loc(column), data_matrix.columns.get_loc(row)] = 1 / int(comparison[c_key[i]])
                     break
-                if column == row:
-                    data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = 1
+            if column == row:
+                data_matrix.iloc[data_matrix.index.get_loc(row), data_matrix.columns.get_loc(column)] = 1
     data_matrix["3rd root of product"] = data_matrix.product(axis=1) ** (1 / len(parameter))
     data_matrix["priority vector"] = data_matrix["3rd root of product"] / data_matrix["3rd root of product"].sum()
-    print(data_matrix)
+    return data_matrix
+
 
 def rating_each_node(column_name,*args,**kwargs):
     name = column_name
@@ -104,7 +105,7 @@ def rating_each_node(column_name,*args,**kwargs):
     # print(data_matrix, "\n")
     return data_matrix
 
-weight_of_criteria()
+print(weight_of_criteria())
 
 # print(rating_each_node("cpu"),"\n")
 # print(rating_each_node("memory"),"\n")
