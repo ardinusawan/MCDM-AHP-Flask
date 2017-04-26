@@ -13,6 +13,7 @@ def f(num):
 
 
 def weight_of_criteria(*args,**kwargs):
+
     Memory_raw = {"Memory":{0:1,1:2, 2:4}}
     LTA_raw = {"LTA": {0:0.5, 1:1, 2:2}}
     CPU_raw = {"CPU":{0:0.25,1:0.5, 2:1}}
@@ -22,7 +23,7 @@ def weight_of_criteria(*args,**kwargs):
     result = Memory.join(LTA)
     result = result.join(CPU)
     return result
-
+weight_of_criteria()
 def rating_each_node(column_name,*args,**kwargs):
     name = column_name
     print("{} rating".format(name))
@@ -86,11 +87,11 @@ def rating_each_node(column_name,*args,**kwargs):
             # cpu_matrix = cpu_matrix.transpose()
 
     # 4. untuk setiap row, hitung nilai geomean dan eigenvector
-    data_matrix["3rd root of product"] = data_matrix.product(axis=1) ** (1 / 3)
+    data_matrix["3rd root of product"] = data_matrix.product(axis=1) ** (1 / database.total_data("containers"))
     data_matrix["priority vector"] = data_matrix["3rd root of product"] / data_matrix["3rd root of product"].sum()
     # print(data_matrix, "\n")
     return data_matrix
 
 print(rating_each_node("cpu"),"\n")
-print(rating_each_node("memory"),"\n")
-print(rating_each_node("last_time_access_percentage"),"\n")
+# print(rating_each_node("memory"),"\n")
+# print(rating_each_node("last_time_access_percentage"),"\n")
