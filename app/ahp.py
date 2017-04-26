@@ -65,8 +65,10 @@ def rating_each_node(column_name,*args,**kwargs):
     data = database.select("stats", **kwargs)
     data_min = min(data, key=lambda key: key[1])
     data_max = max(data, key=lambda key: key[1])
-    data_range = list(np.arange(data_min[1], data_max[1], (data_max[1] - data_min[1]) / 9))
-
+    if not data_min and not data_max:
+        data_range = list(np.arange(data_min[1], data_max[1], (data_max[1] - data_min[1]) / 9))
+    else:
+        data_range = [0]
     # 2. untuk setiap data, cek data ada pada kolom mana, masukkan ke matrik
     c_name = [x[2] for x in container]
     index = c_name
