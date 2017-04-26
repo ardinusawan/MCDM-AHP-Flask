@@ -169,6 +169,8 @@ def select(table_name,*args,**kwargs):
     where_text = "WHERE"
     between = ""
     sort = ""
+    if "config" in kwargs:
+        return config(table_name)
     if "between" in kwargs:
         between = "AND {between} BETWEEN {from_date} AND {to_date}".format(between=kwargs["between"],
                                                                                 from_date=args[0],
