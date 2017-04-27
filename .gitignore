@@ -92,3 +92,7 @@ ENV/
 /moodle/*/php_data/
 
 .idea/
+
+# log
+.nohup.out
+
