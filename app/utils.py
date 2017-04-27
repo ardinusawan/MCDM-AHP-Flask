@@ -128,8 +128,10 @@ def stats(**kwargs):
         return False
 
     now = datetime.datetime.now()
+    containers = 0
     for c in list:
         if "moodle" in c.name:
+            containers += 1
             # print("Container Name:",c.name)
             con = client.containers.get(c.short_id)
             cpu_percentage = get_CPU_Percentage(con)
@@ -155,14 +157,17 @@ def stats(**kwargs):
                     memory_percentage=memory_percentage, last_time_access=LTA_datetime,
                     last_time_access_percentage=LTA_percentage, timestamps=now)
                 database.insert("stats",**kwargs)
-    if database.total_data("containers") != 0:
+    if containers == database.total_data("containers"):
         kwargs.clear()
         kwargs["params"] = "container_id, score, timestamps"
         kwargs["value"] = "'{max}', '{score}', '{timestamps}'".format(max=ahp.score()["max"],
                                                                       score=ahp.score()["result"][ahp.score()["max"]],
                                                                       timestamps=ahp.score()["ts"])
+        if app.debug:
+            kwargs["mode"] = "REPLACE"
         database.insert("result", **kwargs)
-    return True
+    else:
+        return False
 
 
 def ahp_score(**kwargs):
