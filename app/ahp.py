@@ -63,6 +63,8 @@ def rating_each_node(column_name,*args,**kwargs):
     kwargs["where"] = "container_id IN ({c_id}) AND timestamps = '{ts}'".format(c_id=c_id, ts=ts)
     kwargs["sort"] = "container_name"
     data = database.select("stats", **kwargs)
+    if not all(data):
+        return False
     data_min = min(data, key=lambda key: key[1])
     data_max = max(data, key=lambda key: key[1])
     if not data_min and not data_max:
@@ -114,20 +116,23 @@ def rating_each_node(column_name,*args,**kwargs):
 
 
 def score():
-    cpu_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("CPU")],rating_each_node("CPU")["priority vector"])
-    mem_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("Memory")],rating_each_node("Memory")["priority vector"])
-    lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage")["priority vector"])
+    if any(rating_each_node("CPU")) and any(rating_each_node("Memory")) and any(rating_each_node("last_time_access_percentage")):
+        cpu_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("CPU")],rating_each_node("CPU")["priority vector"])
+        mem_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("Memory")],rating_each_node("Memory")["priority vector"])
+        lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage")["priority vector"])
 
-    c_score = cpu_dot_wc + mem_dot_wc + lta_dot_wc
-    c_name = list(map(list, containers("container_id")))
-    c_ts = list(map(list, containers("timestamps")))[0][0].strftime("%Y-%m-%d %H:%M:%S")
-    c_name = [x[0] for x in c_name]
-    score = dict(zip(c_name,c_score))
-    score_max = max(score, key=score.get)
-    score_min = min(score, key=score.get)
+        c_score = cpu_dot_wc + mem_dot_wc + lta_dot_wc
+        c_name = list(map(list, containers("container_id")))
+        c_ts = list(map(list, containers("timestamps")))[0][0].strftime("%Y-%m-%d %H:%M:%S")
+        c_name = [x[0] for x in c_name]
+        score = dict(zip(c_name,c_score))
+        score_max = max(score, key=score.get)
+        score_min = min(score, key=score.get)
 
-    score = {"result":score,"max":str(score_max),"min":str(score_min),"ts":c_ts}
-    return score
+        score = {"result":score,"max":str(score_max),"min":str(score_min),"ts":c_ts}
+        return score
+    else:
+        return False
 
 
 # print("weight_of_criteria:\n",weight_of_criteria(),"\n")
