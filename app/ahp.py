@@ -83,8 +83,8 @@ def rating_each_node(column_name,*args,**kwargs):
     for idx, row in enumerate(data_matrix.index.values):
         for idy, column in enumerate(data_matrix.columns.values):
             tx = [item for item in data if item[2] == row][0][1]
-            ty = tx
-            # ty = [item for item in data if item[2] == column][0][1]
+            # ty = tx
+            ty = [item for item in data if item[2] == column][0][1]
 
             for idx, val in enumerate(data_range[1:len(data_range)]):
                 if (tx >= data_range[idx - 1] and tx < data_range[idx]):
@@ -133,7 +133,6 @@ def score():
         return score
     else:
         return False
-
 
 # print("weight_of_criteria:\n",weight_of_criteria(),"\n")
 # print("cpu:\n", rating_each_node("cpu"),"\n")
