@@ -157,7 +157,7 @@ def stats(**kwargs):
                     memory_percentage=memory_percentage, last_time_access=LTA_datetime,
                     last_time_access_percentage=LTA_percentage, timestamps=now)
                 database.insert("stats",**kwargs)
-    if containers == database.total_data("containers"):
+    if containers == database.total_data("containers") and ahp.score():
         kwargs.clear()
         kwargs["params"] = "container_id, score, timestamps"
         kwargs["value"] = "'{max}', '{score}', '{timestamps}'".format(max=ahp.score()["max"],
