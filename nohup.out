@@ -1,0 +1,392 @@
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+127.0.0.1 - - [28/Apr/2017 03:00:59] "GET /container/list HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:00:59] "GET /container/list HTTP/1.1" 200 -
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:04:58,235] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 23, in container_list
+    res = utils.stats()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/utils.py", line 169, in stats
+    return ahp.score()["score"]
+KeyError: 'score'
+127.0.0.1 - - [28/Apr/2017 03:04:58] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:04:58] "GET /container/list HTTP/1.1" 500 -
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:06:34,259] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1615, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1630, in finalize_request
+    response = self.make_response(rv)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1740, in make_response
+    rv = self.response_class.force_type(rv, request.environ)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/werkzeug/wrappers.py", line 885, in force_type
+    response = BaseResponse(*_run_wsgi_app(response, environ))
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/werkzeug/wrappers.py", line 57, in _run_wsgi_app
+    return _run_wsgi_app(*args)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/werkzeug/test.py", line 884, in run_wsgi_app
+    app_rv = app(environ, start_response)
+TypeError: 'dict' object is not callable
+127.0.0.1 - - [28/Apr/2017 03:06:34] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:06:34] "GET /container/list HTTP/1.1" 500 -
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:07:55,200] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1615, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1630, in finalize_request
+    response = self.make_response(rv)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1725, in make_response
+    raise ValueError('View function did not return a response')
+ValueError: View function did not return a response
+127.0.0.1 - - [28/Apr/2017 03:07:55] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:07:55] "GET /container/list HTTP/1.1" 500 -
+{'ts': '2017-04-28 03:07:15', 'min': '2e9e2cfd72', 'result': {'2e9e2cfd72': 0.10000001, '067d749e69': 0.10000001, '674c8a285f': 0.10000001, '2d69248f40': 0.10000001, 'c1070133de': 0.10000001, '11756eeacd': 0.10000001, '29b34349f0': 0.10000001, '5ed93aba6e': 0.10000001, '5298c44434': 0.10000001, 'f32bb76a35': 0.10000001}, 'max': '2e9e2cfd72'}
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:13:15,496] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 24, in container_list
+    return jsonify(res)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/json.py", line 263, in jsonify
+    (dumps(data, indent=indent, separators=separators), '\n'),
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/json.py", line 123, in dumps
+    rv = _json.dumps(obj, **kwargs)
+  File "/usr/lib/python3.5/json/__init__.py", line 237, in dumps
+    **kw).encode(obj)
+  File "/usr/lib/python3.5/json/encoder.py", line 200, in encode
+    chunks = list(chunks)
+  File "/usr/lib/python3.5/json/encoder.py", line 429, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.5/json/encoder.py", line 403, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.5/json/encoder.py", line 403, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.5/json/encoder.py", line 436, in _iterencode
+    o = _default(o)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/json.py", line 80, in default
+    return _json.JSONEncoder.default(self, o)
+  File "/usr/lib/python3.5/json/encoder.py", line 179, in default
+    raise TypeError(repr(o) + " is not JSON serializable")
+TypeError: 0.078392059 is not JSON serializable
+127.0.0.1 - - [28/Apr/2017 03:13:15] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:13:15] "GET /container/list HTTP/1.1" 500 -
+{'min': '11756eeacd', 'ts': '2017-04-28 03:12:33', 'result': {'067d749e69': 0.078392059, '5ed93aba6e': 0.16965984, '29b34349f0': 0.23664248, '674c8a285f': 0.076034822, '2d69248f40': 0.077551216, 'c1070133de': 0.072422519, '11756eeacd': 0.06902343, '5298c44434': 0.07545457, 'f32bb76a35': 0.072578304, '2e9e2cfd72': 0.072240859}, 'max': '29b34349f0'}
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:18:06,740] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 23, in container_list
+    res = [foo.as_dict() for foo in utils.stats()]
+  File "app/app.py", line 23, in <listcomp>
+    res = [foo.as_dict() for foo in utils.stats()]
+AttributeError: 'str' object has no attribute 'as_dict'
+127.0.0.1 - - [28/Apr/2017 03:18:06] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:18:06] "GET /container/list HTTP/1.1" 500 -
+{'result': {'674c8a285f': 0.075911149, '2e9e2cfd72': 0.072903097, '29b34349f0': 0.069880173, 'f32bb76a35': 0.073475339, 'c1070133de': 0.073103532, '5298c44434': 0.074646622, '11756eeacd': 0.069035634, '5ed93aba6e': 0.067940086, '2d69248f40': 0.076931141, '067d749e69': 0.34617329}, 'ts': '2017-04-28 03:17:24', 'max': '067d749e69', 'min': '5ed93aba6e'}
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:19:50,358] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 24, in container_list
+    return jsonify({"data":res})
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/json.py", line 263, in jsonify
+    (dumps(data, indent=indent, separators=separators), '\n'),
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/json.py", line 123, in dumps
+    rv = _json.dumps(obj, **kwargs)
+  File "/usr/lib/python3.5/json/__init__.py", line 237, in dumps
+    **kw).encode(obj)
+  File "/usr/lib/python3.5/json/encoder.py", line 200, in encode
+    chunks = list(chunks)
+  File "/usr/lib/python3.5/json/encoder.py", line 429, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.5/json/encoder.py", line 403, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.5/json/encoder.py", line 403, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.5/json/encoder.py", line 403, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.5/json/encoder.py", line 436, in _iterencode
+    o = _default(o)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/json.py", line 80, in default
+    return _json.JSONEncoder.default(self, o)
+  File "/usr/lib/python3.5/json/encoder.py", line 179, in default
+    raise TypeError(repr(o) + " is not JSON serializable")
+TypeError: 0.103735 is not JSON serializable
+127.0.0.1 - - [28/Apr/2017 03:19:50] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:19:50] "GET /container/list HTTP/1.1" 500 -
+{'min': '5ed93aba6e', 'ts': '2017-04-28 03:19:09', 'max': '067d749e69', 'result': {'11756eeacd': 0.095839232, '674c8a285f': 0.1028273, '29b34349f0': 0.09680146, '5ed93aba6e': 0.09490338, '5298c44434': 0.10131863, 'c1070133de': 0.10020914, '2d69248f40': 0.10371111, '067d749e69': 0.103735, '2e9e2cfd72': 0.099999271, 'f32bb76a35': 0.10065555}}
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:23:26,129] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 24, in container_list
+    return json.dumps(res, ensure_ascii=False)
+NameError: name 'json' is not defined
+127.0.0.1 - - [28/Apr/2017 03:23:26] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:23:26] "GET /container/list HTTP/1.1" 500 -
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+127.0.0.1 - - [28/Apr/2017 03:25:16] "GET /container/list HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:25:16] "GET /container/list HTTP/1.1" 200 -
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:39:01,033] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/db.py", line 130, in select
+    cursor.execute(sql)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 411, in _query
+    rowcount = self._do_query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 374, in _do_query
+    db.query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 292, in query
+    _mysql.connection.query(self, query)
+_mysql_exceptions.InterfaceError: (0, '')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 23, in container_list
+    res = utils.stats()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/utils.py", line 171, in stats
+    return ahp.score()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/ahp.py", line 119, in score
+    if any(rating_each_node("CPU")) and any(rating_each_node("Memory")) and any(rating_each_node("last_time_access_percentage")):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/ahp.py", line 55, in rating_each_node
+    container = database.select("containers", **kwargs)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/db.py", line 133, in select
+    db.rollback()
+_mysql_exceptions.OperationalError: (2006, 'MySQL server has gone away')
+127.0.0.1 - - [28/Apr/2017 03:39:01] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:39:01] "GET /container/list HTTP/1.1" 500 -
+[2017-04-28 03:39:17,607] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 23, in container_list
+    res = utils.stats()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/utils.py", line 125, in stats
+    database.create_table()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/db.py", line 53, in create_table
+    status = cursor.execute("SHOW TABLES LIKE 'containers'")
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 411, in _query
+    rowcount = self._do_query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 374, in _do_query
+    db.query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 292, in query
+    _mysql.connection.query(self, query)
+_mysql_exceptions.InterfaceError: (0, '')
+127.0.0.1 - - [28/Apr/2017 03:39:17] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:39:17] "GET /container/list HTTP/1.1" 500 -
+[2017-04-28 03:39:18,831] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 23, in container_list
+    res = utils.stats()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/utils.py", line 125, in stats
+    database.create_table()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/db.py", line 53, in create_table
+    status = cursor.execute("SHOW TABLES LIKE 'containers'")
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 411, in _query
+    rowcount = self._do_query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 374, in _do_query
+    db.query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 292, in query
+    _mysql.connection.query(self, query)
+_mysql_exceptions.InterfaceError: (0, '')
+127.0.0.1 - - [28/Apr/2017 03:39:18] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:39:18] "GET /container/list HTTP/1.1" 500 -
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2017-04-28 03:40:33,028] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/db.py", line 130, in select
+    cursor.execute(sql)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 411, in _query
+    rowcount = self._do_query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 374, in _do_query
+    db.query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 292, in query
+    _mysql.connection.query(self, query)
+_mysql_exceptions.InterfaceError: (0, '')
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 23, in container_list
+    res = utils.stats()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/utils.py", line 171, in stats
+    return ahp.score()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/ahp.py", line 119, in score
+    if any(rating_each_node("CPU")) and any(rating_each_node("Memory")) and any(rating_each_node("last_time_access_percentage")):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/ahp.py", line 55, in rating_each_node
+    container = database.select("containers", **kwargs)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/db.py", line 133, in select
+    db.rollback()
+_mysql_exceptions.OperationalError: (2006, 'MySQL server has gone away')
+127.0.0.1 - - [28/Apr/2017 03:40:33] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:40:33] "GET /container/list HTTP/1.1" 500 -
+[2017-04-28 03:40:51,144] ERROR in app: Exception on /container/list [GET]
+Traceback (most recent call last):
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 23, in container_list
+    res = utils.stats()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/utils.py", line 125, in stats
+    database.create_table()
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/app/db.py", line 53, in create_table
+    status = cursor.execute("SHOW TABLES LIKE 'containers'")
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 411, in _query
+    rowcount = self._do_query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/cursors.py", line 374, in _do_query
+    db.query(q)
+  File "/home/ardi/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/MySQLdb/connections.py", line 292, in query
+    _mysql.connection.query(self, query)
+_mysql_exceptions.InterfaceError: (0, '')
+127.0.0.1 - - [28/Apr/2017 03:40:51] "GET /container/list HTTP/1.1" 500 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:40:51] "GET /container/list HTTP/1.1" 500 -
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+127.0.0.1 - - [28/Apr/2017 03:42:53] "GET /container/list HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [28/Apr/2017 03:42:53] "GET /container/list HTTP/1.1" 200 -

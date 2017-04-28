@@ -116,7 +116,7 @@ def get_CPU_Percentage(con):
     logging.debug('cpuDelta: %s, systemDelta: %s, cpu: %s' % (cpuDelta, systemDelta, cpupercentage))
 
     logging.info('"%s" Container CPU: %s ' % (conName, formattedcpupert))
-
+    
     return (cpupercentage * 100)
 
 
@@ -165,11 +165,16 @@ def stats(**kwargs):
                                                                       timestamps=ahp.score()["ts"])
         if app.debug:
             kwargs["mode"] = "REPLACE"
-        database.insert("result", **kwargs)
+        status = database.insert("result", **kwargs)
+        # if status:
+        #     database.close()
+        return ahp.score()
     else:
         return False
 
 
 def ahp_score(**kwargs):
     data = database.select("result", **kwargs)
+    # if data:
+    #     database.close()
     return data

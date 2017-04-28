@@ -20,7 +20,8 @@ def hello():
 
 @app.route("/container/list")
 def container_list():
-    utils.stats()
+    res = utils.stats()
+    return str(res)
     # print(dir(list[0]))
     con_log = ""
     return con_log
