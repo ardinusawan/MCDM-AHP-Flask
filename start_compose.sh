@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 for i in $(seq 1 10);
     do
-	cd moodle/$i/
+	cd ./moodle/$i/
 	docker-compose up &
 	cd -
     done
