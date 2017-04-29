@@ -3,12 +3,16 @@ import atexit
 import utils as utils
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from flask import Flask
+from flask import Flask, render_template
 from flask import jsonify
 from flask import request
 import db as database
 import ahp as ahp
-app = Flask(__name__)
+import os
+
+
+tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+app = Flask(__name__, template_folder=tmpl_dir)
 
 get_stats = 10  # minutes
 
@@ -28,8 +32,8 @@ def stream_stats():
     data = dict()
     data["stream"] = True
     res = utils.stats(**data)
-    return jsonify({"message":"success", "containers":res})
-
+    # return jsonify({"message":"success", "containers":res})
+    return render_template('index.html',**locals())
 @app.route("/AHP/1", methods=['GET', 'POST'])
 def computing_vector():
     if request.method == 'POST':
@@ -56,5 +60,5 @@ scheduler.add_job(
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
-    app.debug = False
+    app.debug = True
     app.run()
