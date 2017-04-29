@@ -123,8 +123,9 @@ def get_CPU_Percentage(con):
 def stats(**kwargs):
     if "stream" in kwargs.keys():
         stream = []
+    elif not "stream" in kwargs.keys():
+        database.create_table()
 
-    database.create_table()
     list = client.containers.list()
     if not list:
         return "No container up"
@@ -144,25 +145,26 @@ def stats(**kwargs):
                 stream.append({"container_id":c.short_id,"container_name":c.name, "cpu":cpu_percentage,
                            "memory":memory_mb, "memory_percentage":memory_percentage,
                            "last_time_access":LTA_datetime,"last_time_access_percentage":LTA_percentage})
-            if app.debug:
-                kwargs["mode"] = "REPLACE"
-            kwargs["params"] = "container_id, name, status, timestamps"
-            kwargs["value"] = "'{short_id}', '{name}', '{status}', '{timestamps}'".format(short_id=con.short_id, name=con.name,
-                                                                                  status=con.status, timestamps=now)
-            status = database.insert("containers",**kwargs)
-            if status:
-                # kwargs.clear()
+            else:
                 if app.debug:
                     kwargs["mode"] = "REPLACE"
-                id = con.short_id + now.strftime("%s")
-                kwargs[
-                    "params"] = "id, container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps"
-                kwargs[
-                    "value"] = "'{id}', '{container_id}', '{container_name}', '{cpu}', '{memory}', '{memory_percentage}', '{last_time_access}', '{last_time_access_percentage}', '{timestamps}'".format(
-                    id=id,container_id=con.short_id, container_name=con.name, cpu=cpu_percentage, memory=memory_mb,
-                    memory_percentage=memory_percentage, last_time_access=LTA_datetime,
-                    last_time_access_percentage=LTA_percentage, timestamps=now)
-                database.insert("stats",**kwargs)
+                kwargs["params"] = "container_id, name, status, timestamps"
+                kwargs["value"] = "'{short_id}', '{name}', '{status}', '{timestamps}'".format(short_id=con.short_id, name=con.name,
+                                                                                     status=con.status, timestamps=now)
+                status = database.insert("containers",**kwargs)
+                if status:
+                    # kwargs.clear()
+                    if app.debug:
+                        kwargs["mode"] = "REPLACE"
+                    id = con.short_id + now.strftime("%s")
+                    kwargs[
+                        "params"] = "id, container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps"
+                    kwargs[
+                        "value"] = "'{id}', '{container_id}', '{container_name}', '{cpu}', '{memory}', '{memory_percentage}', '{last_time_access}', '{last_time_access_percentage}', '{timestamps}'".format(
+                        id=id,container_id=con.short_id, container_name=con.name, cpu=cpu_percentage, memory=memory_mb,
+                        memory_percentage=memory_percentage, last_time_access=LTA_datetime,
+                        last_time_access_percentage=LTA_percentage, timestamps=now)
+                    database.insert("stats",**kwargs)
     if "stream" in kwargs.keys():
         return stream
 
