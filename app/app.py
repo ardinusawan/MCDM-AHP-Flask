@@ -7,7 +7,7 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 import db as database
-
+import ahp as ahp
 app = Flask(__name__)
 
 get_stats = 10  # minutes
@@ -38,7 +38,7 @@ def computing_vector():
 
 @app.route("/AHP/result", methods=['GET'])
 def ahp_result():
-    return jsonify({"message":"success", "data":utils.ahp_score()})
+    return jsonify({"message":"success", "data":ahp.score()})
 
 # schedule to write stats to DB
 scheduler = BackgroundScheduler()
@@ -53,5 +53,5 @@ scheduler.add_job(
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
-    # app.debug = True
+    app.debug = False
     app.run()
