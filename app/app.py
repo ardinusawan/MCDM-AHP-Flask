@@ -21,11 +21,14 @@ def hello():
 @app.route("/container/list")
 def container_list():
     res = utils.stats()
-    return res
-    # print(dir(list[0]))
-    con_log = ""
-    return con_log
+    return jsonify(res)
 
+@app.route("/stats")
+def stream_stats():
+    data = dict()
+    data["stream"] = True
+    res = utils.stats(**data)
+    return jsonify(res)
 
 @app.route("/AHP/1", methods=['GET', 'POST'])
 def computing_vector():
