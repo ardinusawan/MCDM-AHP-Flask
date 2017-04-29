@@ -21,7 +21,7 @@ def hello():
 @app.route("/container/list")
 def container_list():
     res = utils.stats()
-    return str(res)
+    return res
     # print(dir(list[0]))
     con_log = ""
     return con_log
@@ -38,7 +38,7 @@ def computing_vector():
 
 @app.route("/AHP/result", methods=['GET'])
 def ahp_result():
-    return jsonify({"message":"success", "data":ahp.score()})
+    return jsonify(ahp.score())
 
 # schedule to write stats to DB
 scheduler = BackgroundScheduler()
