@@ -122,6 +122,7 @@ def score():
         lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage")["priority vector"])
 
         c_score = cpu_dot_wc + mem_dot_wc + lta_dot_wc
+        c_score = [x.item() for x in list(c_score)]
         c_name = list(map(list, containers("container_id")))
         c_ts = list(map(list, containers("timestamps")))[0][0].strftime("%Y-%m-%d %H:%M:%S")
         c_name = [x[0] for x in c_name]
