@@ -121,14 +121,17 @@ def get_CPU_Percentage(con):
 
 
 def stats(**kwargs):
-    # with app.app_context():
+    if "stream" in kwargs.keys():
+        stream = []
+
     database.create_table()
     list = client.containers.list()
     if not list:
-        return False
+        return "No container up"
 
     now = datetime.datetime.now()
     containers = 0
+
     for c in list:
         if "moodle" in c.name:
             containers += 1
@@ -137,7 +140,10 @@ def stats(**kwargs):
             cpu_percentage = get_CPU_Percentage(con)
             memory_percentage, memory_mb = get_Memory_Data(con)
             LTA_percentage, LTA_datetime = get_LTA_Data(con)
-
+            if "stream" in kwargs.keys():
+                stream.append({"container_id":c.short_id,"container_name":c.name, "cpu":cpu_percentage,
+                           "memory":memory_mb, "memory_percentage":memory_percentage,
+                           "last_time_access":LTA_datetime,"last_time_access_percentage":LTA_percentage})
             if app.debug:
                 kwargs["mode"] = "REPLACE"
             kwargs["params"] = "container_id, name, status, timestamps"
@@ -145,7 +151,7 @@ def stats(**kwargs):
                                                                                   status=con.status, timestamps=now)
             status = database.insert("containers",**kwargs)
             if status:
-                kwargs.clear()
+                # kwargs.clear()
                 if app.debug:
                     kwargs["mode"] = "REPLACE"
                 id = con.short_id + now.strftime("%s")
@@ -157,6 +163,9 @@ def stats(**kwargs):
                     memory_percentage=memory_percentage, last_time_access=LTA_datetime,
                     last_time_access_percentage=LTA_percentage, timestamps=now)
                 database.insert("stats",**kwargs)
+    if "stream" in kwargs.keys():
+        return stream
+
     if containers == database.total_data("containers") and ahp.score():
         kwargs.clear()
         kwargs["params"] = "container_id, score, timestamps"
