@@ -21,14 +21,14 @@ def hello():
 @app.route("/container/list")
 def container_list():
     res = utils.stats()
-    return jsonify(res)
+    return jsonify({"status":"success", "data":res})
 
 @app.route("/stats")
 def stream_stats():
     data = dict()
     data["stream"] = True
     res = utils.stats(**data)
-    return jsonify(res)
+    return jsonify({"message":"success", "containers":res})
 
 @app.route("/AHP/1", methods=['GET', 'POST'])
 def computing_vector():
