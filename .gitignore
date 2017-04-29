@@ -90,8 +90,8 @@ ENV/
 
 /moodle/*/apache_data/
 /moodle/*/php_data/
-/moodle/*/mariadb_data
-/moodle/*/php_data
+/moodle/*/mariadb_data/
+/moodle/*/moodle_data/
 .idea/
 
 # log
