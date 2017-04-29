@@ -1,0 +1,32 @@
+{
+  "containers": [
+    {
+      "container_id": "fb77b569bd",
+      "container_name": "moodle3",
+      "cpu": 0.004496852791878173,
+      "last_time_access": "Sat, 29 Apr 2017 20:01:28 GMT",
+      "last_time_access_percentage": 14.006627372685184,
+      "memory": 115.71875,
+      "memory_percentage": 1.4660658027185365
+    },
+    {
+      "container_id": "68d432709b",
+      "container_name": "moodle2",
+      "cpu": 0.004212178217821783,
+      "last_time_access": "Sat, 29 Apr 2017 20:01:36 GMT",
+      "last_time_access_percentage": 14.00199587962963,
+      "memory": 123.125,
+      "memory_percentage": 1.5598971813964446
+    },
+    {
+      "container_id": "01f7458eaf",
+      "container_name": "moodle1",
+      "cpu": 0.0037304260651629074,
+      "last_time_access": "Sat, 29 Apr 2017 20:01:39 GMT",
+      "last_time_access_percentage": 14.003153290509257,
+      "memory": 123.6796875,
+      "memory_percentage": 1.5669246369725325
+    }
+  ],
+  "message": "success"
+}
