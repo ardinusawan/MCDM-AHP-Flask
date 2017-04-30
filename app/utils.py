@@ -168,7 +168,7 @@ def stats(**kwargs):
     if "stream" in kwargs.keys():
         return stream
 
-    if containers == database.total_data("containers") and ahp.score():
+    if containers == database.total_data("containers") and ahp.score()["status"] != "error":
         kwargs.clear()
         kwargs["params"] = "container_id, score, timestamps"
         kwargs["value"] = "'{max}', '{score}', '{timestamps}'".format(max=ahp.score()["max"],
@@ -176,22 +176,15 @@ def stats(**kwargs):
                                                                       timestamps=ahp.score()["ts"])
         if app.debug:
             kwargs["mode"] = "REPLACE"
-        status = database.insert("result", **kwargs)
-        # if status:
-        #     database.close()
+        database.insert("result", **kwargs)
         c_stop = client.containers.get(ahp.score()["max"])
         c_stop.pause()
-        # print(c_stop.status)
-        status = client.containers.get(ahp.score()["max"]).status
-        if status != 'running':
-            kwargs.clear()
-            kwargs = ahp.score()
-            kwargs["message"] = "container {name} has been stop".format(name=c_stop.name)
-            return kwargs
-        else:
-            raise ValueError('"%s" container is fail to stop' % c_stop.name)
+        kwargs.clear()
+        kwargs = ahp.score()
+        kwargs["message"] = "container {name} has been paused".format(name=c_stop.name)
+        return kwargs
     else:
-        return False
+        return {"status":"error","error":ahp.score()["message"]}
 
 
 def ahp_score(**kwargs):

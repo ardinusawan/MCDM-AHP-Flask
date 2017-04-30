@@ -53,6 +53,8 @@ def rating_each_node(column_name,*args,**kwargs):
     kwargs["where"] = "status = 'running'"
     kwargs["sort"] = "name"
     container = database.select("containers", **kwargs)
+    if not container:
+        return False, {"message":"no container active"}
     c_id = '{}'.format([x[0] for x in container])
     c_id = "".join(c_id)
     c_id = c_id[1:-1]
@@ -64,7 +66,7 @@ def rating_each_node(column_name,*args,**kwargs):
     kwargs["sort"] = "container_name"
     data = database.select("stats", **kwargs)
     if not all(data):
-        return False
+        return False, {"message":"no stats"}
     data_min = min(data, key=lambda key: key[1])
     data_max = max(data, key=lambda key: key[1])
     if not data_min and not data_max:
@@ -112,14 +114,14 @@ def rating_each_node(column_name,*args,**kwargs):
     # 4. untuk setiap row, hitung nilai geomean dan eigenvector
     data_matrix["3rd root of product"] = data_matrix.product(axis=1) ** (1 / database.total_data("containers"))
     data_matrix["priority vector"] = data_matrix["3rd root of product"] / data_matrix["3rd root of product"].sum()
-    return data_matrix
+    return True, data_matrix
 
 
 def score():
-    if any(rating_each_node("CPU")) and any(rating_each_node("Memory")) and any(rating_each_node("last_time_access_percentage")):
-        cpu_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("CPU")],rating_each_node("CPU")["priority vector"])
-        mem_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("Memory")],rating_each_node("Memory")["priority vector"])
-        lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage")["priority vector"])
+    if rating_each_node("CPU")[0] != False and rating_each_node("Memory")[0]  != False and rating_each_node("last_time_access_percentage")[0] != False:
+        cpu_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("CPU")],rating_each_node("CPU")[1]["priority vector"])
+        mem_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("Memory")],rating_each_node("Memory")[1]["priority vector"])
+        lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage")[1]["priority vector"])
 
         c_score = cpu_dot_wc + mem_dot_wc + lta_dot_wc
         c_score = [x.item() for x in list(c_score)]
@@ -130,10 +132,11 @@ def score():
         score_max = max(score, key=score.get)
         score_min = min(score, key=score.get)
 
-        score = {"result":score,"max":str(score_max),"min":str(score_min),"ts":c_ts}
+        score = {"status":"success","result":score,"max":str(score_max),"min":str(score_min),"ts":c_ts}
         return score
     else:
-        return False
+        error = rating_each_node("CPU")[1]
+        return {"status":"error","message":error}
 
 # print("weight_of_criteria:\n",weight_of_criteria(),"\n")
 # print("cpu:\n", rating_each_node("cpu"),"\n")
