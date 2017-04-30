@@ -134,7 +134,7 @@ def stats(**kwargs):
     containers = 0
 
     for c in list:
-        if "moodle" in c.name:
+        if "moodle" in c.name and c.status == 'running':
             containers += 1
             # print("Container Name:",c.name)
             con = client.containers.get(c.short_id)
