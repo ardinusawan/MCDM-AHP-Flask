@@ -179,7 +179,17 @@ def stats(**kwargs):
         status = database.insert("result", **kwargs)
         # if status:
         #     database.close()
-        return ahp.score()
+        c_stop = client.containers.get(ahp.score()["max"])
+        c_stop.pause()
+        # print(c_stop.status)
+        status = client.containers.get(ahp.score()["max"]).status
+        if status != 'running':
+            kwargs.clear()
+            kwargs = ahp.score()
+            kwargs["message"] = "container {name} has been stop".format(name=c_stop.name)
+            return kwargs
+        else:
+            raise ValueError('"%s" container is fail to stop' % c_stop.name)
     else:
         return False
 
