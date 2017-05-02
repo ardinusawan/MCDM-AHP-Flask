@@ -60,10 +60,15 @@ def rating_each_node(column_name,*args,**kwargs):
     c_id = c_id[1:-1]
     ts = container[0][1]
 
-    kwargs.clear()
+    # kwargs.clear()
     kwargs["column"] = "container_id, {column}, container_name".format(column=name)
-    kwargs["where"] = "container_id IN ({c_id}) AND timestamps = '{ts}'".format(c_id=c_id, ts=ts)
     kwargs["sort"] = "container_name"
+    # data = database.select("stats", **kwargs)
+    if "day" in kwargs.keys():
+        kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN = '{day_from}' and '{day_to}'".format(c_id=c_id, day_from=kwargs["day_from"], day_to=kwargs["day_to"])
+    elif "week" in kwargs.keys():
+        kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN = '{week_from}' and '{week_to}'".format(c_id=c_id, week_from=kwargs["week_from"], week_to=kwargs["week_to"])
+    kwargs["where"] = "container_id IN ({c_id}) AND timestamps = '{ts}'".format(c_id=c_id, ts=ts)
     data = database.select("stats", **kwargs)
     if not all(data):
         return False, {"message":"no stats"}
