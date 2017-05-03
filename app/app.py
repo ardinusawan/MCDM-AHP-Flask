@@ -3,12 +3,16 @@ import atexit
 import utils as utils
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from flask import Flask
+from flask import Flask, render_template
 from flask import jsonify
 from flask import request
 import db as database
+import ahp as ahp
+import os
 
-app = Flask(__name__)
+
+tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+app = Flask(__name__, template_folder=tmpl_dir)
 
 get_stats = 10  # minutes
 
@@ -20,12 +24,20 @@ def hello():
 
 @app.route("/container/list")
 def container_list():
-    utils.stats()
-    # print(dir(list[0]))
-    con_log = ""
-    return con_log
+    res = utils.stats()
+    # if res["status"] != "error":
+    #     return jsonify({"status":"success", "message":res})
+    # else:
+    #     return jsonify(res)
 
-
+    return jsonify(res)
+@app.route("/stats")
+def stream_stats():
+    data = dict()
+    data["stream"] = True
+    res = utils.stats(**data)
+    # return jsonify({"message":"success", "containers":res})
+    return render_template('index.html',**locals())
 @app.route("/AHP/1", methods=['GET', 'POST'])
 def computing_vector():
     if request.method == 'POST':
@@ -37,7 +49,7 @@ def computing_vector():
 
 @app.route("/AHP/result", methods=['GET'])
 def ahp_result():
-    return jsonify({"message":"success", "data":utils.ahp_score()})
+    return jsonify(ahp.score())
 
 # schedule to write stats to DB
 scheduler = BackgroundScheduler()
@@ -52,5 +64,5 @@ scheduler.add_job(
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
-    # app.debug = True
+    app.debug = True
     app.run()

@@ -32,6 +32,9 @@ db = MySQLdb.connect(config("mysql")["host"],
                      config("mysql")["password"],
                      config("mysql")["database"])
 
+def close():
+    db.close()
+
 def truncate(table_name):
     cursor = db.cursor()
     cursor.execute("TRUNCATE TABLE {}".format(table_name))

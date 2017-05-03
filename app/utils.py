@@ -116,60 +116,101 @@ def get_CPU_Percentage(con):
     logging.debug('cpuDelta: %s, systemDelta: %s, cpu: %s' % (cpuDelta, systemDelta, cpupercentage))
 
     logging.info('"%s" Container CPU: %s ' % (conName, formattedcpupert))
-
+    
     return (cpupercentage * 100)
 
 
 def stats(**kwargs):
-    # with app.app_context():
-    database.create_table()
+    if "stream" in kwargs.keys():
+        stream = []
+    elif not "stream" in kwargs.keys():
+        database.create_table()
+
     list = client.containers.list()
     if not list:
-        return False
+        return "No container up"
 
     now = datetime.datetime.now()
     containers = 0
+
+    day = dict()
+    day["day"] = True
+    day["day_from"] = now - datetime.timedelta(days=2)
+    day["day_to"] = now
+
+    week = dict()
+    week["week"] = True
+    week["week_from"] = now - datetime.timedelta(weeks=1)
+    week["week_to"] = now
+
     for c in list:
-        if "moodle" in c.name:
+        if "moodle" in c.name and c.status == 'running':
             containers += 1
             # print("Container Name:",c.name)
             con = client.containers.get(c.short_id)
             cpu_percentage = get_CPU_Percentage(con)
             memory_percentage, memory_mb = get_Memory_Data(con)
             LTA_percentage, LTA_datetime = get_LTA_Data(con)
-
-            if app.debug:
-                kwargs["mode"] = "REPLACE"
-            kwargs["params"] = "container_id, name, status, timestamps"
-            kwargs["value"] = "'{short_id}', '{name}', '{status}', '{timestamps}'".format(short_id=con.short_id, name=con.name,
-                                                                                  status=con.status, timestamps=now)
-            status = database.insert("containers",**kwargs)
-            if status:
-                kwargs.clear()
+            if "stream" in kwargs.keys():
+                stream.append({"container_id":c.short_id,"container_name":c.name, "cpu":cpu_percentage,
+                           "memory":memory_mb, "memory_percentage":memory_percentage,
+                           "last_time_access":LTA_datetime,"last_time_access_percentage":LTA_percentage})
+            else:
                 if app.debug:
                     kwargs["mode"] = "REPLACE"
-                id = con.short_id + now.strftime("%s")
-                kwargs[
-                    "params"] = "id, container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps"
-                kwargs[
-                    "value"] = "'{id}', '{container_id}', '{container_name}', '{cpu}', '{memory}', '{memory_percentage}', '{last_time_access}', '{last_time_access_percentage}', '{timestamps}'".format(
-                    id=id,container_id=con.short_id, container_name=con.name, cpu=cpu_percentage, memory=memory_mb,
-                    memory_percentage=memory_percentage, last_time_access=LTA_datetime,
-                    last_time_access_percentage=LTA_percentage, timestamps=now)
-                database.insert("stats",**kwargs)
-    if containers == database.total_data("containers") and ahp.score():
+                kwargs["params"] = "container_id, name, status, timestamps"
+                kwargs["value"] = "'{short_id}', '{name}', '{status}', '{timestamps}'".format(short_id=con.short_id, name=con.name,
+                                                                                     status=con.status, timestamps=now)
+                status = database.insert("containers",**kwargs)
+                if status:
+                    # kwargs.clear()
+                    if app.debug:
+                        kwargs["mode"] = "REPLACE"
+                    id = con.short_id + now.strftime("%s")
+                    kwargs[
+                        "params"] = "id, container_id, container_name, cpu, memory, memory_percentage, last_time_access, last_time_access_percentage, timestamps"
+                    kwargs[
+                        "value"] = "'{id}', '{container_id}', '{container_name}', '{cpu}', '{memory}', '{memory_percentage}', '{last_time_access}', '{last_time_access_percentage}', '{timestamps}'".format(
+                        id=id,container_id=con.short_id, container_name=con.name, cpu=cpu_percentage, memory=memory_mb,
+                        memory_percentage=memory_percentage, last_time_access=LTA_datetime,
+                        last_time_access_percentage=LTA_percentage, timestamps=now)
+                    database.insert("stats",**kwargs)
+    if "stream" in kwargs.keys():
+        return stream
+
+    if containers == database.total_data("containers") and ahp.score()["status"] != "error":
         kwargs.clear()
-        kwargs["params"] = "container_id, score, timestamps"
-        kwargs["value"] = "'{max}', '{score}', '{timestamps}'".format(max=ahp.score()["max"],
-                                                                      score=ahp.score()["result"][ahp.score()["max"]],
-                                                                      timestamps=ahp.score()["ts"])
+        kwargs["params"] = "container_id_now, container_id_days, container_id_weeks, score_now, score_days, score_weeks, day_from, week_from, timestamps"
+
+        # now
+        score_now = ahp.score()
+        score_days = ahp.score(**day)
+        score_weeks = ahp.score(**week)
+        kwargs["value"] = "'{max_now}', '{max_day}', '{max_week}', '{score_now}', '{score_days}', '{score_weeks}', '{day_from}', '{week_from}', '{timestamps}'".format(max_now=score_now["max"],
+                                                                      max_day=score_days["max"], max_week=score_weeks["max"],
+                                                                      score_now=score_now["result"][score_now["max"]], score_days=score_days["result"][score_days["max"]], score_weeks=score_weeks["result"][score_weeks["max"]],
+                                                                      day_from=day["day_from"], week_from=week["week_from"], timestamps=score_now["ts"])
+
         if app.debug:
             kwargs["mode"] = "REPLACE"
         database.insert("result", **kwargs)
+        c_stop_now = client.containers.get(score_now["max"])
+        c_stop_days = client.containers.get(score_days["max"])
+        c_stop_weeks = client.containers.get(score_weeks["max"])
+
+        # c_stop.pause()
+
+        score_now["message"] = "container {name} has been paused".format(name=c_stop_now.name)
+        score_days["message"] = "container {name} has been paused".format(name=c_stop_days.name)
+        score_weeks["message"] = "container {name} has been paused".format(name=c_stop_weeks.name)
+
+        return score_now, score_days, score_weeks
     else:
-        return False
+        return {"status":"error","error":ahp.score()["message"]}
 
 
 def ahp_score(**kwargs):
     data = database.select("result", **kwargs)
+    # if data:
+    #     database.close()
     return data

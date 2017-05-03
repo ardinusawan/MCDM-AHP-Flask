@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Container stats</title>
+</head>
+<body>
+{% block body %}
+
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <div id="chart_div"  style="width: 900px; height: 300px;"></div>
+
+
+<script type='text/javascript'>//<![CDATA[
+
+google.load('visualization', '1', {packages: ['corechart', 'bar']});
+google.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+
+      var data = google.visualization.arrayToDataTable([
+        ['Name', 'CPU %', 'Memory %', 'LTA/day %', { role: 'style' }],
+        ['{{res[0]["container_name"]}}', {{res[0]["cpu"]}}, {{res[0]["memory_percentage"]}}, {{res[0]["last_time_access_percentage"]}}, 'gold'],
+        ['{{res[1]["container_name"]}}', {{res[1]["cpu"]}}, {{res[1]["memory_percentage"]}}, {{res[1]["last_time_access_percentage"]}}, 'silver'],
+        ['{{res[2]["container_name"]}}', {{res[2]["cpu"]}}, {{res[2]["memory_percentage"]}}, {{res[2]["last_time_access_percentage"]}},'brown']
+      ]);
+
+      var options = {
+        title: 'Containers overview',
+        chartArea: {width: '50%'},
+        hAxis: {
+          title: '',
+          minValue: 0
+        },
+        vAxis: {
+          title: ''
+        }
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }
+//]]>
+
+</script>
+
+
+{% endblock %}
+</body>
+</html>
