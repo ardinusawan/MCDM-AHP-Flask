@@ -133,6 +133,16 @@ def stats(**kwargs):
     now = datetime.datetime.now()
     containers = 0
 
+    day = dict()
+    day["day"] = True
+    day["day_from"] = now - datetime.timedelta(days=2)
+    day["day_to"] = now
+
+    week = dict()
+    week["week"] = True
+    week["week_from"] = now - datetime.timedelta(weeks=1)
+    week["week_to"] = now
+
     for c in list:
         if "moodle" in c.name and c.status == 'running':
             containers += 1
@@ -170,19 +180,31 @@ def stats(**kwargs):
 
     if containers == database.total_data("containers") and ahp.score()["status"] != "error":
         kwargs.clear()
-        kwargs["params"] = "container_id, score, timestamps"
-        kwargs["value"] = "'{max}', '{score}', '{timestamps}'".format(max=ahp.score()["max"],
-                                                                      score=ahp.score()["result"][ahp.score()["max"]],
-                                                                      timestamps=ahp.score()["ts"])
+        kwargs["params"] = "container_id_now, container_id_days, container_id_weeks, score_now, score_days, score_weeks, day_from, week_from, timestamps"
+
+        # now
+        score_now = ahp.score()
+        score_days = ahp.score(**day)
+        score_weeks = ahp.score(**week)
+        kwargs["value"] = "'{max_now}', '{max_day}', '{max_week}', '{score_now}', '{score_days}', '{score_weeks}', '{day_from}', '{week_from}', '{timestamps}'".format(max_now=score_now["max"],
+                                                                      max_day=score_days["max"], max_week=score_weeks["max"],
+                                                                      score_now=score_now["result"][score_now["max"]], score_days=score_days["result"][score_days["max"]], score_weeks=score_weeks["result"][score_weeks["max"]],
+                                                                      day_from=day["day_from"], week_from=week["week_from"], timestamps=score_now["ts"])
+
         if app.debug:
             kwargs["mode"] = "REPLACE"
         database.insert("result", **kwargs)
-        c_stop = client.containers.get(ahp.score()["max"])
-        c_stop.pause()
-        kwargs.clear()
-        kwargs = ahp.score()
-        kwargs["message"] = "container {name} has been paused".format(name=c_stop.name)
-        return kwargs
+        c_stop_now = client.containers.get(score_now["max"])
+        c_stop_days = client.containers.get(score_days["max"])
+        c_stop_weeks = client.containers.get(score_weeks["max"])
+
+        # c_stop.pause()
+
+        score_now["message"] = "container {name} has been paused".format(name=c_stop_now.name)
+        score_days["message"] = "container {name} has been paused".format(name=c_stop_days.name)
+        score_weeks["message"] = "container {name} has been paused".format(name=c_stop_weeks.name)
+
+        return score_now, score_days, score_weeks
     else:
         return {"status":"error","error":ahp.score()["message"]}
 

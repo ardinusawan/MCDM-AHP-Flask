@@ -1,3 +1,6 @@
+import datetime
+from collections import Counter
+
 import numpy as np
 import db as database
 import pprint
@@ -65,11 +68,23 @@ def rating_each_node(column_name,*args,**kwargs):
     kwargs["sort"] = "container_name"
     # data = database.select("stats", **kwargs)
     if "day" in kwargs.keys():
-        kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN = '{day_from}' and '{day_to}'".format(c_id=c_id, day_from=kwargs["day_from"], day_to=kwargs["day_to"])
+        kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN '{day_from}' and '{day_to}'".format(c_id=c_id, day_from=kwargs["day_from"], day_to=kwargs["day_to"])
     elif "week" in kwargs.keys():
-        kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN = '{week_from}' and '{week_to}'".format(c_id=c_id, week_from=kwargs["week_from"], week_to=kwargs["week_to"])
-    kwargs["where"] = "container_id IN ({c_id}) AND timestamps = '{ts}'".format(c_id=c_id, ts=ts)
+        kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN '{week_from}' and '{week_to}'".format(c_id=c_id, week_from=kwargs["week_from"], week_to=kwargs["week_to"])
+    else:
+        kwargs["where"] = "container_id IN ({c_id}) AND timestamps = '{ts}'".format(c_id=c_id, ts=ts)
     data = database.select("stats", **kwargs)
+
+    c = Counter(v[2] for v in data)
+
+    data_average = list()
+    for val in c:
+        average = sum(v[1] for v in data if v[2]==val) / float(c[val])
+        id = [v for i, v in enumerate(data) if v[2] == val]
+        id = id[0][0]
+        data_average.append((id, average, val))
+    if data_average:
+        data = data_average
     if not all(data):
         return False, {"message":"no stats"}
     data_min = min(data, key=lambda key: key[1])
@@ -122,11 +137,11 @@ def rating_each_node(column_name,*args,**kwargs):
     return True, data_matrix
 
 
-def score():
-    if rating_each_node("CPU")[0] != False and rating_each_node("Memory")[0]  != False and rating_each_node("last_time_access_percentage")[0] != False:
-        cpu_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("CPU")],rating_each_node("CPU")[1]["priority vector"])
-        mem_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("Memory")],rating_each_node("Memory")[1]["priority vector"])
-        lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage")[1]["priority vector"])
+def score(**kwargs):
+    if rating_each_node("CPU", **kwargs)[0] != False and rating_each_node("Memory", **kwargs)[0]  != False and rating_each_node("last_time_access_percentage", **kwargs)[0] != False:
+        cpu_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("CPU")],rating_each_node("CPU", **kwargs)[1]["priority vector"])
+        mem_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("Memory")],rating_each_node("Memory", **kwargs)[1]["priority vector"])
+        lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],rating_each_node("last_time_access_percentage", **kwargs)[1]["priority vector"])
 
         c_score = cpu_dot_wc + mem_dot_wc + lta_dot_wc
         c_score = [x.item() for x in list(c_score)]
@@ -144,7 +159,16 @@ def score():
         return {"status":"error","message":error}
 
 # print("weight_of_criteria:\n",weight_of_criteria(),"\n")
-# print("cpu:\n", rating_each_node("cpu"),"\n")
-# print("memory:\n", rating_each_node("memory"),"\n")
-# print("lta:\n", rating_each_node("last_time_access_percentage"),"\n")
+# print("cpu:\n", rating_each_node("cpu"),"\n")[1]
+# print("cpu:\n", rating_each_node("memory"),"\n")[1]
+# print("lta:\n", rating_each_node("last_time_access_percentage")[1],"\n")
 # print("score:\n",score())
+
+# data = dict()
+# data["day"] = True
+# now = datetime.datetime.now()
+# data["day_from"] = now - datetime.timedelta(days=2)
+# data["day_to"] = now
+# print("cpu:\n", score(**data), "\n")
+
+# print("memory:\n", rating_each_node("memory", **data)[1],"\n")

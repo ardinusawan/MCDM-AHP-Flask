@@ -25,10 +25,12 @@ def hello():
 @app.route("/container/list")
 def container_list():
     res = utils.stats()
-    if res["status"] != "error":
-        return jsonify({"status":"success", "message":res})
-    else:
-        return jsonify(res)
+    # if res["status"] != "error":
+    #     return jsonify({"status":"success", "message":res})
+    # else:
+    #     return jsonify(res)
+
+    return jsonify(res)
 @app.route("/stats")
 def stream_stats():
     data = dict()
