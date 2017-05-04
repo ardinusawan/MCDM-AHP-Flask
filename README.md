@@ -1,37 +1,15 @@
-## Welcome to GitHub Pages
+# MCDM-Docker-with-AHP
+* Docker moodle : https://hub.docker.com/r/jhardison/moodle/
+* Docker library : http://docker-py.readthedocs.io/en/stable/containers.html
+## For the first time
+* docker run -d --name DB -p 3306:3306 -e MYSQL_DATABASE=moodle -e MYSQL_ROOT_PASSWORD=moodle -e MYSQL_USER=moodle -e MYSQL_PASSWORD=moodle mysql
+* docker run -d -P --name moodle --link DB:DB -e MOODLE_URL=http://localhost:8080 -p 8080:80 jhardison/moodle
 
-You can use the [editor on GitHub](https://github.com/ardinusawan/MCDM-AHP-Flask/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+### Show all container already installed 
+* docker ps -a
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ardinusawan/MCDM-AHP-Flask/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+# Rev
+* Using ubuntu image x 10 container
+..* docker run -i -t ubuntu /bin/bash
+* https://github.com/MartinThoma/matrix-multiplication
+..* ./test.sh -i Testing/100.in -p "python Python/ijkMultiplication.py" -n 100
