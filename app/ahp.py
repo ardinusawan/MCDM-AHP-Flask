@@ -67,7 +67,9 @@ def rating_each_node(column_name,*args,**kwargs):
     kwargs["column"] = "container_id, {column}, container_name".format(column=name)
     kwargs["sort"] = "container_name"
     # data = database.select("stats", **kwargs)
-    if "day" in kwargs.keys():
+    if "hour" in kwargs.keys():
+        kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN '{hour_from}' and '{hour_to}'".format(c_id=c_id, hour_from=kwargs["hour_from"], hour_to=kwargs["hour_to"])
+    elif "day" in kwargs.keys():
         kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN '{day_from}' and '{day_to}'".format(c_id=c_id, day_from=kwargs["day_from"], day_to=kwargs["day_to"])
     elif "week" in kwargs.keys():
         kwargs["where"] = "container_id IN ({c_id}) AND timestamps BETWEEN '{week_from}' and '{week_to}'".format(c_id=c_id, week_from=kwargs["week_from"], week_to=kwargs["week_to"])

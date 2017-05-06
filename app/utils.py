@@ -133,6 +133,11 @@ def stats(**kwargs):
     now = datetime.datetime.now()
     containers = 0
 
+    hour = dict()
+    hour["hour"] = True
+    hour["hour_from"] = now - datetime.timedelta(hours=6)
+    hour["hour_to"] = now
+
     day = dict()
     day["day"] = True
     day["day_from"] = now - datetime.timedelta(days=2)
@@ -183,13 +188,13 @@ def stats(**kwargs):
         kwargs["params"] = "container_id_now, container_id_days, container_id_weeks, score_now, score_days, score_weeks, day_from, week_from, timestamps"
 
         # now
-        score_now = ahp.score()
+        score_hour = ahp.score(**hour)
         score_days = ahp.score(**day)
         score_weeks = ahp.score(**week)
         kwargs["value"] = "'{max_now}', '{max_day}', '{max_week}', '{score_now}', '{score_days}', '{score_weeks}', '{day_from}', '{week_from}', '{timestamps}'".format(max_now=score_now["max"],
                                                                       max_day=score_days["max"], max_week=score_weeks["max"],
-                                                                      score_now=score_now["result"][score_now["max"]], score_days=score_days["result"][score_days["max"]], score_weeks=score_weeks["result"][score_weeks["max"]],
-                                                                      day_from=day["day_from"], week_from=week["week_from"], timestamps=score_now["ts"])
+                                                                      score_now=score_hour["result"][score_hour["max"]], score_days=score_days["result"][score_days["max"]], score_weeks=score_weeks["result"][score_weeks["max"]],
+                                                                      day_from=day["day_from"], week_from=week["week_from"], timestamps=score_hour["ts"])
 
         if app.debug:
             kwargs["mode"] = "REPLACE"
