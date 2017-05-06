@@ -10,7 +10,7 @@ def config(section):
     dir_path = os.path.dirname(full_path)
     dir_path = dir_path + '/'
 
-    settings = configparser.ConfigParser()
+    settings = configparser.ConfigParser(allow_no_value=True)
     settings._interpolation = configparser.ExtendedInterpolation()
     settings.read(dir_path + 'config.ini')
 
