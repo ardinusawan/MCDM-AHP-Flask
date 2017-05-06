@@ -75,8 +75,15 @@ def create_table():
 
     result = """
             CREATE TABLE IF NOT EXISTS result (
-                container_id VARCHAR(255),
-                score FLOAT,
+                container_id_hours VARCHAR(255),
+                container_id_days VARCHAR(255),
+                container_id_weeks VARCHAR(255),
+                score_hours FLOAT,
+                score_days FLOAT,
+                score_weeks FLOAT,
+                hour_from DATETIME,
+                day_from DATETIME,
+                week_from DATETIME,
                 timestamps DATETIME PRIMARY KEY)
             """
     status = cursor.execute("SHOW TABLES LIKE 'result'")
