@@ -116,7 +116,7 @@ def get_CPU_Percentage(con):
     logging.debug('cpuDelta: %s, systemDelta: %s, cpu: %s' % (cpuDelta, systemDelta, cpupercentage))
 
     logging.info('"%s" Container CPU: %s ' % (conName, formattedcpupert))
-    
+
     return (cpupercentage * 100)
 
 
@@ -132,21 +132,6 @@ def stats(**kwargs):
 
     now = datetime.datetime.now()
     containers = 0
-
-    hour = dict()
-    hour["hour"] = True
-    hour["hour_from"] = now - datetime.timedelta(hours=6)
-    hour["hour_to"] = now
-
-    day = dict()
-    day["day"] = True
-    day["day_from"] = now - datetime.timedelta(days=2)
-    day["day_to"] = now
-
-    week = dict()
-    week["week"] = True
-    week["week_from"] = now - datetime.timedelta(weeks=1)
-    week["week_to"] = now
 
     for c in list:
         if "moodle" in c.name and c.status == 'running':
@@ -186,7 +171,9 @@ def stats(**kwargs):
     if containers == database.total_data("containers") and ahp.score()["status"] != "error":
         kwargs.clear()
         kwargs["params"] = "container_id_hours, container_id_days, container_id_weeks, score_hours, score_days, score_weeks, hour_from, day_from, week_from, timestamps"
-
+        hour = timedelta(now,"hour")
+        day = timedelta(now,"day")
+        week = timedelta(now,"week")
         score_hour = ahp.score(**hour)
         score_days = ahp.score(**day)
         score_weeks = ahp.score(**week)
@@ -208,7 +195,7 @@ def stats(**kwargs):
         score_days["message"] = "container {name} has been paused".format(name=c_stop_days.name)
         score_weeks["message"] = "container {name} has been paused".format(name=c_stop_weeks.name)
 
-        return score_hour, score_days, score_weeks
+        return {"hour":score_hour, "day":score_days, "week":score_weeks}
     else:
         return {"status":"error","error":ahp.score()["message"]}
 
@@ -217,4 +204,26 @@ def ahp_score(**kwargs):
     data = database.select("result", **kwargs)
     # if data:
     #     database.close()
+    return data
+
+def timedelta(now,time):
+    data = dict()
+    temp = dict()
+    temp["config"] = True
+    td = database.select("timedelta", **temp)
+    td = {k: int(v) for k, v in td.items()}
+    if time == "hour":
+        data["hour"] = True
+        data["hour_from"] = now - datetime.timedelta(hours=td["hour"])
+        data["hour_to"] = now
+    elif time == "day":
+        data["day"] = True
+        data["day_from"] = now - datetime.timedelta(days=td["day"])
+        data["day_to"] = now
+
+    elif time == "week":
+        data["week"] = True
+        data["week_from"] = now - datetime.timedelta(weeks=td["week"])
+        data["week_to"] = now
+
     return data
