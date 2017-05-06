@@ -185,7 +185,7 @@ def stats(**kwargs):
 
     if containers == database.total_data("containers") and ahp.score()["status"] != "error":
         kwargs.clear()
-        kwargs["params"] = "container_id_hours, container_id_days, container_id_weeks, score_hours, score_days, score_weeks, day_from, week_from, timestamps"
+        kwargs["params"] = "container_id_hours, container_id_days, container_id_weeks, score_hours, score_days, score_weeks, hour_from, day_from, week_from, timestamps"
 
         score_hour = ahp.score(**hour)
         score_days = ahp.score(**day)
