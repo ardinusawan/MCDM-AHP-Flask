@@ -175,27 +175,44 @@ def stats(**kwargs):
         day = timedelta(now,"day")
         week = timedelta(now,"week")
         score_hour = ahp.score(**hour)
-        score_days = ahp.score(**day)
-        score_weeks = ahp.score(**week)
+        score_day = ahp.score(**day)
+        score_week = ahp.score(**week)
         kwargs["value"] = "'{max_hour}', '{max_day}', '{max_week}', '{score_hour}', '{score_days}', '{score_weeks}', '{hour_from}', '{day_from}', '{week_from}', '{timestamps}'".format(max_hour=score_hour["max"],
-                                                                      max_day=score_days["max"], max_week=score_weeks["max"],
-                                                                      score_hour=score_hour["result"][score_hour["max"]], score_days=score_days["result"][score_days["max"]], score_weeks=score_weeks["result"][score_weeks["max"]],
+                                                                      max_day=score_day["max"], max_week=score_week["max"],
+                                                                      score_hour=score_hour["result"][score_hour["max"]], score_days=score_day["result"][score_day["max"]], score_weeks=score_week["result"][score_week["max"]],
                                                                       hour_from=hour["hour_from"], day_from=day["day_from"], week_from=week["week_from"], timestamps=score_hour["ts"])
 
         if app.debug:
             kwargs["mode"] = "REPLACE"
         database.insert("result", **kwargs)
         c_stop_hour= client.containers.get(score_hour["max"])
-        c_stop_days = client.containers.get(score_days["max"])
-        c_stop_weeks = client.containers.get(score_weeks["max"])
+        c_stop_day = client.containers.get(score_day["max"])
+        c_stop_week = client.containers.get(score_week["max"])
 
-        # c_stop.pause()
+        temp = dict()
+        temp["config"] = True
+        todo = database.select("prefered", **temp)
+        if todo["do"].lower() != "running":
+            if todo["do"].lower() == "pause":
+                if todo["by"] == "hour":
+                    c_stop_hour.pause()
+                elif todo["by"] == "day":
+                    c_stop_day.pause()
+                elif todo["by"] == "week":
+                    c_stop_week.pause()
+            elif todo["do"].lower() == "stop":
+                if todo["by"] == "hour":
+                    c_stop_hour.stop()
+                elif todo["by"] == "day":
+                    c_stop_day.stop()
+                elif todo["by"] == "week":
+                    c_stop_week.stop()
 
         score_hour["message"] = "container {name} has been paused".format(name=c_stop_hour.name)
-        score_days["message"] = "container {name} has been paused".format(name=c_stop_days.name)
-        score_weeks["message"] = "container {name} has been paused".format(name=c_stop_weeks.name)
+        score_day["message"] = "container {name} has been paused".format(name=c_stop_day.name)
+        score_week["message"] = "container {name} has been paused".format(name=c_stop_week.name)
 
-        return {"hour":score_hour, "day":score_days, "week":score_weeks}
+        return {"hour":score_hour, "day":score_day, "week":score_week}
     else:
         return {"status":"error","error":ahp.score()["message"]}
 
