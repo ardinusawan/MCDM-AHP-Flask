@@ -196,22 +196,23 @@ def stats(**kwargs):
             if todo["do"].lower() == "pause":
                 if todo["by"] == "hour":
                     c_stop_hour.pause()
+                    score_hour["message"] = "container {name} has been paused".format(name=c_stop_hour.name)
                 elif todo["by"] == "day":
                     c_stop_day.pause()
+                    score_day["message"] = "container {name} has been paused".format(name=c_stop_day.name)
                 elif todo["by"] == "week":
                     c_stop_week.pause()
+                    score_week["message"] = "container {name} has been paused".format(name=c_stop_week.name)
             elif todo["do"].lower() == "stop":
                 if todo["by"] == "hour":
                     c_stop_hour.stop()
+                    score_hour["message"] = "container {name} has been stoped".format(name=c_stop_hour.name)
                 elif todo["by"] == "day":
                     c_stop_day.stop()
+                    score_day["message"] = "container {name} has been stoped".format(name=c_stop_day.name)
                 elif todo["by"] == "week":
                     c_stop_week.stop()
-
-        score_hour["message"] = "container {name} has been paused".format(name=c_stop_hour.name)
-        score_day["message"] = "container {name} has been paused".format(name=c_stop_day.name)
-        score_week["message"] = "container {name} has been paused".format(name=c_stop_week.name)
-
+                    score_week["message"] = "container {name} has been stoped".format(name=c_stop_week.name)
         return {"hour":score_hour, "day":score_day, "week":score_week}
     else:
         return {"status":"error","error":ahp.score()["message"]}
