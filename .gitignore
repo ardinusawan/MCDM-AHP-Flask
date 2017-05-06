@@ -92,6 +92,7 @@ ENV/
 /moodle/*/php_data/
 /moodle/*/mariadb_data/
 /moodle/*/moodle_data/
+/moodle/*/nohup.out
 .idea/
 
 # log
