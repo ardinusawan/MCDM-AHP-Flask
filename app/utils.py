@@ -185,31 +185,30 @@ def stats(**kwargs):
 
     if containers == database.total_data("containers") and ahp.score()["status"] != "error":
         kwargs.clear()
-        kwargs["params"] = "container_id_now, container_id_days, container_id_weeks, score_now, score_days, score_weeks, day_from, week_from, timestamps"
+        kwargs["params"] = "container_id_hours, container_id_days, container_id_weeks, score_hours, score_days, score_weeks, day_from, week_from, timestamps"
 
-        # now
         score_hour = ahp.score(**hour)
         score_days = ahp.score(**day)
         score_weeks = ahp.score(**week)
-        kwargs["value"] = "'{max_now}', '{max_day}', '{max_week}', '{score_now}', '{score_days}', '{score_weeks}', '{day_from}', '{week_from}', '{timestamps}'".format(max_now=score_now["max"],
+        kwargs["value"] = "'{max_hour}', '{max_day}', '{max_week}', '{score_hour}', '{score_days}', '{score_weeks}', '{hour_from}', '{day_from}', '{week_from}', '{timestamps}'".format(max_hour=score_hour["max"],
                                                                       max_day=score_days["max"], max_week=score_weeks["max"],
-                                                                      score_now=score_hour["result"][score_hour["max"]], score_days=score_days["result"][score_days["max"]], score_weeks=score_weeks["result"][score_weeks["max"]],
-                                                                      day_from=day["day_from"], week_from=week["week_from"], timestamps=score_hour["ts"])
+                                                                      score_hour=score_hour["result"][score_hour["max"]], score_days=score_days["result"][score_days["max"]], score_weeks=score_weeks["result"][score_weeks["max"]],
+                                                                      hour_from=hour["hour_from"], day_from=day["day_from"], week_from=week["week_from"], timestamps=score_hour["ts"])
 
         if app.debug:
             kwargs["mode"] = "REPLACE"
         database.insert("result", **kwargs)
-        c_stop_now = client.containers.get(score_now["max"])
+        c_stop_hour= client.containers.get(score_hour["max"])
         c_stop_days = client.containers.get(score_days["max"])
         c_stop_weeks = client.containers.get(score_weeks["max"])
 
         # c_stop.pause()
 
-        score_now["message"] = "container {name} has been paused".format(name=c_stop_now.name)
+        score_hour["message"] = "container {name} has been paused".format(name=c_stop_hour.name)
         score_days["message"] = "container {name} has been paused".format(name=c_stop_days.name)
         score_weeks["message"] = "container {name} has been paused".format(name=c_stop_weeks.name)
 
-        return score_now, score_days, score_weeks
+        return score_hour, score_days, score_weeks
     else:
         return {"status":"error","error":ahp.score()["message"]}
 
