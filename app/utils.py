@@ -245,3 +245,21 @@ def timedelta(now,time):
         data["week_to"] = now
 
     return data
+
+
+def log(table_name, limit=False, *args):
+    data = dict()
+    data["sort"] = "timestamps DESC"
+    if limit:
+        data["limit"] = args[0] + ", " + args[1]
+        logs = database.select(table_name, **data)
+    else:
+        logs = database.select(table_name, **data)
+    column = database.column(table_name)
+    # print(column)
+    # print(logs)
+    res = list()
+    for key,val in enumerate(logs):
+        temp = dict(zip(column,logs[key]))
+        res.append(temp)
+    return res
