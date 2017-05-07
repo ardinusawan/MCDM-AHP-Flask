@@ -35,6 +35,12 @@ db = MySQLdb.connect(config("mysql")["host"],
 def close():
     db.close()
 
+def column(table_name):
+    cursor = db.cursor()
+    cursor.execute("SHOW columns FROM {table_name}".format(table_name=table_name))
+    field_names = [columns[0] for columns in cursor.fetchall()]
+    return field_names
+
 def truncate(table_name):
     cursor = db.cursor()
     cursor.execute("TRUNCATE TABLE {}".format(table_name))
@@ -114,6 +120,7 @@ def select(table_name,*args,**kwargs):
     where_text = "WHERE"
     between = ""
     sort = ""
+    limit = "LIMIT 1, 18446744073709551615"
     if "config" in kwargs:
         return config(table_name)
     if "between" in kwargs:
@@ -127,12 +134,14 @@ def select(table_name,*args,**kwargs):
         kwargs["where"] = ""
     if "sort" in kwargs:
         sort = "ORDER BY {}" .format(kwargs["sort"])
-    sql = "SELECT {column} FROM {table_name} {where_text} {where} {between} {sort}".format(column=kwargs["column"],
+    if "limit" in kwargs:
+        limit = "LIMIT {limit}".format(limit=kwargs["limit"])
+    sql = "SELECT {column} FROM {table_name} {where_text} {where} {between} {sort} {limit}".format(column=kwargs["column"],
                                                                                     table_name=table_name,
                                                                                     where_text=where_text,
                                                                                     where=kwargs["where"],
                                                                                     between=between,
-                                                                                    sort=sort)
+                                                                                    sort=sort, limit=limit)
     try:
         cursor.execute(sql)
         msg = cursor.fetchall()
