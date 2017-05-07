@@ -120,7 +120,7 @@ def select(table_name,*args,**kwargs):
     where_text = "WHERE"
     between = ""
     sort = ""
-    limit = "LIMIT 1, 18446744073709551615"
+    limit = "LIMIT 0, 18446744073709551615"
     if "config" in kwargs:
         return config(table_name)
     if "between" in kwargs:
@@ -142,6 +142,7 @@ def select(table_name,*args,**kwargs):
                                                                                     where=kwargs["where"],
                                                                                     between=between,
                                                                                     sort=sort, limit=limit)
+    print(sql)
     try:
         cursor.execute(sql)
         msg = cursor.fetchall()
