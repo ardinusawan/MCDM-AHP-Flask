@@ -25,31 +25,37 @@ def hello():
 @app.route("/container/list")
 def container_list():
     res = utils.stats()
-    # if res["status"] != "error":
-    #     return jsonify({"status":"success", "message":res})
-    # else:
-    #     return jsonify(res)
-
     return jsonify(res)
-@app.route("/stats")
+
+@app.route("/stats-now")
 def stream_stats():
     data = dict()
     data["stream"] = True
     res = utils.stats(**data)
     # return jsonify({"message":"success", "containers":res})
     return render_template('index.html',**locals())
-@app.route("/AHP/1", methods=['GET', 'POST'])
-def computing_vector():
-    if request.method == 'POST':
-        data = request.get_json()
-        status = database.insert_comparison_matrix(data['parameter_data'], **data['comparison'])
-        return jsonify(data)
-    else:
-        return jsonify({"Message": "Success"}, sort_keys=False, indent=2)
 
-@app.route("/AHP/result", methods=['GET'])
-def ahp_result():
-    return jsonify(ahp.score())
+@app.route("/stats-log", methods=['GET', 'POST'])
+def stats_log():
+    table_name = "stats"
+    if request.method == 'GET':
+        res = utils.log(table_name)
+        return jsonify(res)
+    if request.method == 'POST':
+        limit = True
+        res = utils.log(table_name, limit, request.form["from"], request.form["to"])
+        return jsonify(res)
+
+@app.route("/result-log", methods=['GET', 'POST'])
+def result_log():
+    table_name = "result"
+    if request.method == 'GET':
+        res = utils.log(table_name)
+        return jsonify(res)
+    if request.method == 'POST':
+        limit = True
+        res = utils.log(table_name, limit, request.form["from"], request.form["to"])
+        return jsonify(res)
 
 # schedule to write stats to DB
 scheduler = BackgroundScheduler()
