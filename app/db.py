@@ -142,7 +142,6 @@ def select(table_name,*args,**kwargs):
                                                                                     where=kwargs["where"],
                                                                                     between=between,
                                                                                     sort=sort, limit=limit)
-    print(sql)
     try:
         cursor.execute(sql)
         msg = cursor.fetchall()
