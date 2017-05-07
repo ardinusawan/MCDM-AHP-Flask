@@ -167,17 +167,17 @@ def score(**kwargs):
         error = rating_each_node("CPU")[1]
         return {"status": "error", "message": error}
 
-        # print("weight_of_criteria:\n",weight_of_criteria(),"\n")
-        # print("cpu:\n", rating_each_node("cpu"),"\n")[1]
-        # print("cpu:\n", rating_each_node("memory"),"\n")[1]
-        # print("lta:\n", rating_each_node("last_time_access_percentage")[1],"\n")
-        # print("score:\n",score())
+# print("weight_of_criteria:\n",weight_of_criteria(),"\n")
+# print("cpu:\n", rating_each_node("cpu"),"\n")[1]
+# print("cpu:\n", rating_each_node("memory"),"\n")[1]
+# print("lta:\n", rating_each_node("last_time_access_percentage")[1],"\n")
+# print("score:\n",score())
 
-        # data = dict()
-        # data["day"] = True
-        # now = datetime.datetime.now()
-        # data["day_from"] = now - datetime.timedelta(days=2)
-        # data["day_to"] = now
-        # print("cpu:\n", score(**data), "\n")
+# data = dict()
+# data["day"] = True
+# now = datetime.datetime.now()
+# data["day_from"] = now - datetime.timedelta(days=2)
+# data["day_to"] = now
+# print("cpu:\n", score(**data), "\n")
 
-        # print("memory:\n", rating_each_node("memory", **data)[1],"\n")
+# print("memory:\n", rating_each_node("memory", **data)[1],"\n")
