@@ -143,14 +143,18 @@ def rating_each_node(column_name, *args, **kwargs):
 
 
 def score(**kwargs):
-    if rating_each_node("CPU", **kwargs)[0] != False and rating_each_node("Memory", **kwargs)[0] != False and \
-                    rating_each_node("last_time_access_percentage", **kwargs)[0] != False:
+    
+    CPU = rating_each_node("CPU", **kwargs)
+    Memory = rating_each_node("Memory", **kwargs)
+    LTA = rating_each_node("last_time_access_percentage", **kwargs)
+    
+    if CPU[0] != False and Memory[0] != False and LTA[0] != False:
         cpu_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("CPU")],
-                            rating_each_node("CPU", **kwargs)[1]["priority vector"])
+                            CPU[1]["priority vector"])
         mem_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("Memory")],
-                            rating_each_node("Memory", **kwargs)[1]["priority vector"])
+                            Memory[1]["priority vector"])
         lta_dot_wc = np.dot(weight_of_criteria()["priority vector"].iloc[weight_of_criteria().index.get_loc("LTA")],
-                            rating_each_node("last_time_access_percentage", **kwargs)[1]["priority vector"])
+                            LTA[1]["priority vector"])
 
         c_score = cpu_dot_wc + mem_dot_wc + lta_dot_wc
         c_score = [x.item() for x in list(c_score)]
