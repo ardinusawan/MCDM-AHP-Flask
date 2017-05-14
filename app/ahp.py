@@ -168,7 +168,7 @@ def score(**kwargs):
         score_final = {"status": "success", "result": score_final, "max": str(score_max), "min": str(score_min), "ts": c_ts}
         return score_final
     else:
-        error = rating_each_node("CPU")[1]
+        error = CPU[1]
         return {"status": "error", "message": error}
 
 # print("weight_of_criteria:\n",weight_of_criteria(),"\n")
