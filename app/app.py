@@ -3,7 +3,7 @@ import atexit
 import utils as utils
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect
 from flask import jsonify
 from flask import request
 import db as database
@@ -20,6 +20,12 @@ get_stats = database.interval()
 def hello():
     return "Hello World!"
 
+@application.route("/moodle/<moodle_id>")
+def moodle(moodle_id):
+    moodle = 'moodle' + moodle_id
+    utils.unpause_docker(moodle)
+    url = "http://localhost:1000" + moodle_id
+    return redirect(url, code=302)
 
 @application.route("/container/list")
 def container_list():

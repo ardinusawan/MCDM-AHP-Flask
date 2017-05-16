@@ -263,3 +263,13 @@ def log(table_name, limit=False, *args):
         temp = dict(zip(column,logs[key]))
         res.append(temp)
     return res
+
+def unpause_docker(id_or_name):
+    con = client.containers.get(id_or_name)
+    if con.status != 'running':
+        con.unpause()
+
+def start_docker(id_or_name):
+    con = client.containers.get(id_or_name)
+    if con.status != 'running':
+        con.start()
