@@ -22,7 +22,14 @@ function drawBasic() {
         ['Name', 'CPU %', 'Memory %', 'LTA/day %', { role: 'style' }],
         ['{{res[0]["container_name"]}}', {{res[0]["cpu"]}}, {{res[0]["memory_percentage"]}}, {{res[0]["last_time_access_percentage"]}}, 'gold'],
         ['{{res[1]["container_name"]}}', {{res[1]["cpu"]}}, {{res[1]["memory_percentage"]}}, {{res[1]["last_time_access_percentage"]}}, 'silver'],
-        ['{{res[2]["container_name"]}}', {{res[2]["cpu"]}}, {{res[2]["memory_percentage"]}}, {{res[2]["last_time_access_percentage"]}},'brown']
+        ['{{res[2]["container_name"]}}', {{res[2]["cpu"]}}, {{res[2]["memory_percentage"]}}, {{res[2]["last_time_access_percentage"]}},'brown'],
+	['{{res[3]["container_name"]}}', {{res[3]["cpu"]}}, {{res[3]["memory_percentage"]}}, {{res[3]["last_time_access_percentage"]}},'black'],
+	['{{res[4]["container_name"]}}', {{res[4]["cpu"]}}, {{res[4]["memory_percentage"]}}, {{res[4]["last_time_access_percentage"]}},'blue'],
+	['{{res[5]["container_name"]}}', {{res[5]["cpu"]}}, {{res[5]["memory_percentage"]}}, {{res[5]["last_time_access_percentage"]}},'red'],
+	['{{res[6]["container_name"]}}', {{res[6]["cpu"]}}, {{res[6]["memory_percentage"]}}, {{res[6]["last_time_access_percentage"]}},'orange'],
+	['{{res[7]["container_name"]}}', {{res[7]["cpu"]}}, {{res[7]["memory_percentage"]}}, {{res[7]["last_time_access_percentage"]}},'pink'],
+	['{{res[8]["container_name"]}}', {{res[8]["cpu"]}}, {{res[8]["memory_percentage"]}}, {{res[8]["last_time_access_percentage"]}},'green'],
+	['{{res[9]["container_name"]}}', {{res[9]["cpu"]}}, {{res[9]["memory_percentage"]}}, {{res[9]["last_time_access_percentage"]}},'purple']
       ]);
 
       var options = {
