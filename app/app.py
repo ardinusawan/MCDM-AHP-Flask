@@ -14,8 +14,7 @@ import os
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
-get_stats = 10  # minutes
-
+get_stats = database.interval()
 
 @app.route("/")
 def hello():

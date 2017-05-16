@@ -32,6 +32,9 @@ db = MySQLdb.connect(config("mysql")["host"],
                      config("mysql")["password"],
                      config("mysql")["database"])
 
+def interval():
+    return int(config('interval')['minute'])
+
 def close():
     db.close()
 
