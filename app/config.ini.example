@@ -23,3 +23,6 @@ week: 1
 ; do: running if dont wanna pause/stop
 do: running
 by: hour
+
+[interval]
+minute: 10
