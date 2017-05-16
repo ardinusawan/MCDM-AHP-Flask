@@ -1,0 +1,25 @@
+[mysql]
+host: localhost
+username: root
+password: Asddsaa1
+database: MCDM-AHP
+
+[parameter]
+Param1: Memory
+Param2: LTA
+Param3: CPU
+
+[comparison]
+Memory/LTA: 2
+Memory/CPU: 4
+LTA/CPU: 2
+
+[timedelta]
+hour: 6
+day: 2
+week: 1
+
+[prefered]
+; do: running if dont wanna pause/stop
+do: running
+by: hour
