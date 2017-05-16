@@ -19,4 +19,5 @@
 * https://github.com/MartinThoma/matrix-multiplication
 ..* ./test.sh -i Testing/100.in -p "python Python/ijkMultiplication.py" -n 100
 
-
+# uWSGI
+* https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-14-04

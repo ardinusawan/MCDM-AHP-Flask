@@ -12,21 +12,21 @@ import os
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-app = Flask(__name__, template_folder=tmpl_dir)
+application = Flask(__name__, template_folder=tmpl_dir)
 
 get_stats = database.interval()
 
-@app.route("/")
+@application.route("/")
 def hello():
     return "Hello World!"
 
 
-@app.route("/container/list")
+@application.route("/container/list")
 def container_list():
     res = utils.stats()
     return jsonify(res)
 
-@app.route("/stats-now")
+@application.route("/stats-now")
 def stream_stats():
     data = dict()
     data["stream"] = True
@@ -34,7 +34,7 @@ def stream_stats():
     # return jsonify({"message":"success", "containers":res})
     return render_template('index.html',**locals())
 
-@app.route("/stats-log", methods=['GET', 'POST'])
+@application.route("/stats-log", methods=['GET', 'POST'])
 def stats_log():
     table_name = "stats"
     if request.method == 'GET':
@@ -45,7 +45,7 @@ def stats_log():
         res = utils.log(table_name, limit, request.form["from"], request.form["to"])
         return jsonify(res)
 
-@app.route("/result-log", methods=['GET', 'POST'])
+@application.route("/result-log", methods=['GET', 'POST'])
 def result_log():
     table_name = "result"
     if request.method == 'GET':
@@ -69,5 +69,5 @@ scheduler.add_job(
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
-    app.debug = False
-    app.run(host='0.0.0.0')
+    application.debug = False
+    application.run(host='0.0.0.0')
