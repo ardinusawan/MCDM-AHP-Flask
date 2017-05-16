@@ -97,4 +97,4 @@ ENV/
 
 # log
 .nohup.out
-
+app/config.ini
