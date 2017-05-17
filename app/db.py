@@ -31,7 +31,8 @@ db = MySQLdb.connect(host=str(config("mysql")["host"]),
                      port=int(config("mysql")["port"]),
                      user=config("mysql")["username"],
                      passwd=config("mysql")["password"],
-                     db=config("mysql")["database"])
+                     db=config("mysql")["database"],
+                     connect_timeout=10)
 
 def interval():
     return int(config('interval')['minute'])

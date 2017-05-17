@@ -215,7 +215,7 @@ def stats(**kwargs):
                 elif todo["by"] == "week":
                     c_stop_week.stop()
                     score_week["message"] = "container {name} has been stoped".format(name=c_stop_week.name)
-        database.close()
+        # database.close()
         return {"hour":score_hour, "day":score_day, "week":score_week}
     else:
         return {"status":"error","error":ahp.score()["message"]}
