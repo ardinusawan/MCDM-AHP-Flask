@@ -168,7 +168,8 @@ def stats(**kwargs):
     if "stream" in kwargs.keys():
         return stream
 
-    if containers == database.total_data("containers") and ahp.score()["status"] != "error":
+    # if containers == database.total_data("containers") and ahp.score()["status"] != "error":
+    if ahp.score()["status"] != "error":
         kwargs.clear()
         kwargs["params"] = "container_id_hours, container_id_days, container_id_weeks, score_hours, score_days, score_weeks, hour_from, day_from, week_from, timestamps"
         hour = timedelta(now,"hour")
