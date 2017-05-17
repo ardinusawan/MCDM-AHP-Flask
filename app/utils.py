@@ -123,8 +123,8 @@ def get_CPU_Percentage(con):
 def stats(**kwargs):
     if "stream" in kwargs.keys():
         stream = []
-    elif not "stream" in kwargs.keys():
-        database.create_table()
+    # elif not "stream" in kwargs.keys():
+    #     database.create_table()
 
     list = client.containers.list()
     if not list:

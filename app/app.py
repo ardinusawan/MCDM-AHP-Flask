@@ -62,6 +62,11 @@ def result_log():
         res = utils.log(table_name, limit, request.form["from"], request.form["to"])
         return jsonify(res)
 
+@application.route("/database/create")
+def create_database():
+    database.create_table()
+    return jsonify({"message":"success"})
+
 @application.errorhandler(500)
 def internal_error(exception):
     application.logger.error(exception)
