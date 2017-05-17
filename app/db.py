@@ -27,10 +27,11 @@ def config(section):
     return data
 
 
-db = MySQLdb.connect(config("mysql")["host"],
-                     config("mysql")["username"],
-                     config("mysql")["password"],
-                     config("mysql")["database"])
+db = MySQLdb.connect(host=str(config("mysql")["host"]),
+                     port=int(config("mysql")["port"]),
+                     user=config("mysql")["username"],
+                     passwd=config("mysql")["password"],
+                     db=config("mysql")["database"])
 
 def interval():
     return int(config('interval')['minute'])

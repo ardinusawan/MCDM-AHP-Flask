@@ -3,6 +3,7 @@ host: localhost
 username: root
 password: Asddsaa1
 database: MCDM-AHP
+port: 3306
 
 [parameter]
 Param1: Memory
