@@ -43,13 +43,13 @@ def column(table_name):
     cursor = db.cursor()
     cursor.execute("SHOW columns FROM {table_name}".format(table_name=table_name))
     field_names = [columns[0] for columns in cursor.fetchall()]
-    cursor.close()
+    # cursor.close()
     return field_names
 
 def truncate(table_name):
     cursor = db.cursor()
     cursor.execute("TRUNCATE TABLE {}".format(table_name))
-    cursor.close()
+    # cursor.close()
 
 # create table if not exist
 def create_table():
@@ -68,9 +68,9 @@ def create_table():
     else:
         truncate("containers")
         # print("Table containers is already, skip..")
-    cursor.close()
-
-    cursor = db.cursor()
+    # cursor.close()
+    #
+    # cursor = db.cursor()
     stats = """
     CREATE TABLE IF NOT EXISTS stats (
         id VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -86,9 +86,9 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'stats'")
     if status == 0:
         cursor.execute(stats)
-    cursor.close()
-
-    cursor = db.cursor()
+    # cursor.close()
+    #
+    # cursor = db.cursor()
     result = """
             CREATE TABLE IF NOT EXISTS result (
                 container_id_hours VARCHAR(255),
