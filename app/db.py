@@ -43,13 +43,13 @@ def column(table_name):
     cursor = db.cursor()
     cursor.execute("SHOW columns FROM {table_name}".format(table_name=table_name))
     field_names = [columns[0] for columns in cursor.fetchall()]
-    # cursor.close()
+    cursor.close()
     return field_names
 
 def truncate(table_name):
     cursor = db.cursor()
     cursor.execute("TRUNCATE TABLE {}".format(table_name))
-    # cursor.close()
+    cursor.close()
 
 # create table if not exist
 def create_table():
@@ -175,13 +175,11 @@ def insert(table_name,**kwargs):
                                                                          params=kwargs["params"],
                                                                          values=kwargs["value"])
     try:
-        status = cursor.execute(sql)
+        msg = cursor.execute(sql)
         db.commit()
     except:
         db.rollback()
         print(table_name,sys.exc_info())
-        cursor.close()
-        return status
-    finally:
-        cursor.close()
-        return status
+        return False
+    cursor.close()
+    return True
