@@ -43,11 +43,13 @@ def column(table_name):
     cursor = db.cursor()
     cursor.execute("SHOW columns FROM {table_name}".format(table_name=table_name))
     field_names = [columns[0] for columns in cursor.fetchall()]
+    cursor.close()
     return field_names
 
 def truncate(table_name):
     cursor = db.cursor()
     cursor.execute("TRUNCATE TABLE {}".format(table_name))
+    cursor.close()
 
 # create table if not exist
 def create_table():
@@ -66,7 +68,9 @@ def create_table():
     else:
         truncate("containers")
         # print("Table containers is already, skip..")
+    cursor.close()
 
+    cursor = db.cursor()
     stats = """
     CREATE TABLE IF NOT EXISTS stats (
         id VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -82,7 +86,9 @@ def create_table():
     status = cursor.execute("SHOW TABLES LIKE 'stats'")
     if status == 0:
         cursor.execute(stats)
+    cursor.close()
 
+    cursor = db.cursor()
     result = """
             CREATE TABLE IF NOT EXISTS result (
                 container_id_hours VARCHAR(255),
@@ -101,6 +107,7 @@ def create_table():
         cursor.execute(result)
     # else:
     #     print("Table result is already, skip..")
+    cursor.close()
 
 
 def total_data(table_name,**kwargs):
@@ -115,6 +122,7 @@ def total_data(table_name,**kwargs):
     cursor.execute(sql)
     msg = cursor.fetchone()
     msg = msg[0]
+    cursor.close()
     return msg
 
 
@@ -152,6 +160,7 @@ def select(table_name,*args,**kwargs):
     except:
         db.rollback()
         print(table_name, sys.exc_info())
+    cursor.close()
     return msg
 
 def insert(table_name,**kwargs):
@@ -171,6 +180,8 @@ def insert(table_name,**kwargs):
     except:
         db.rollback()
         print(table_name,sys.exc_info())
+        cursor.close()
         return status
     finally:
+        cursor.close()
         return status
