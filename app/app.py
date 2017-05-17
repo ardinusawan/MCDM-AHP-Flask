@@ -62,6 +62,12 @@ def result_log():
         res = utils.log(table_name, limit, request.form["from"], request.form["to"])
         return jsonify(res)
 
+@application.errorhandler(500)
+def internal_error(exception):
+    application.logger.error(exception)
+    return render_template('500.html'), 500
+
+
 # schedule to write stats to DB
 scheduler = BackgroundScheduler()
 scheduler.start()
