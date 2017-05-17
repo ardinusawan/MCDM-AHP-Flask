@@ -1,0 +1,146 @@
+ * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+202.46.129.70 - - [17/May/2017 02:47:56] "GET / HTTP/1.1" 200 -
+[2017-05-17 02:48:39,620] ERROR in app: Exception on /stats-now [GET]
+Traceback (most recent call last):
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 41, in stream_stats
+    return render_template('index.html',**locals())
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/templating.py", line 134, in render_template
+    context, ctx.app)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/templating.py", line 116, in _render
+    rv = template.render(context)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/app/templates/index.html", line 8, in top-level template code
+    {% block body %}
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/app/templates/index.html", line 32, in block "body"
+    ['{{res[9]["container_name"]}}', {{res[9]["cpu"]}}, {{res[9]["memory_percentage"]}}, {{res[9]["last_time_access_percentage"]}},'purple']
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 411, in getitem
+    return obj[argument]
+jinja2.exceptions.UndefinedError: list object has no element 9
+202.46.129.77 - - [17/May/2017 02:48:39] "GET /stats-now HTTP/1.1" 500 -
+INFO:werkzeug:202.46.129.77 - - [17/May/2017 02:48:39] "GET /stats-now HTTP/1.1" 500 -
+[2017-05-17 02:49:23,851] ERROR in app: Exception on /stats-now [GET]
+Traceback (most recent call last):
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 41, in stream_stats
+    return render_template('index.html',**locals())
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/templating.py", line 134, in render_template
+    context, ctx.app)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/templating.py", line 116, in _render
+    rv = template.render(context)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/app/templates/index.html", line 8, in top-level template code
+    {% block body %}
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/app/templates/index.html", line 32, in block "body"
+    ['{{res[9]["container_name"]}}', {{res[9]["cpu"]}}, {{res[9]["memory_percentage"]}}, {{res[9]["last_time_access_percentage"]}},'purple']
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 411, in getitem
+    return obj[argument]
+jinja2.exceptions.UndefinedError: list object has no element 9
+202.46.129.70 - - [17/May/2017 02:49:23] "GET /stats-now HTTP/1.1" 500 -
+INFO:werkzeug:202.46.129.70 - - [17/May/2017 02:49:23] "GET /stats-now HTTP/1.1" 500 -
+202.46.129.77 - - [17/May/2017 02:51:04] "GET /container/list HTTP/1.1" 200 -
+INFO:werkzeug:202.46.129.77 - - [17/May/2017 02:51:04] "GET /container/list HTTP/1.1" 200 -
+[2017-05-17 02:52:50,015] ERROR in app: Exception on /stats-now [GET]
+Traceback (most recent call last):
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 41, in stream_stats
+    return render_template('index.html',**locals())
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/templating.py", line 134, in render_template
+    context, ctx.app)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/templating.py", line 116, in _render
+    rv = template.render(context)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/app/templates/index.html", line 8, in top-level template code
+    {% block body %}
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/app/templates/index.html", line 32, in block "body"
+    ['{{res[9]["container_name"]}}', {{res[9]["cpu"]}}, {{res[9]["memory_percentage"]}}, {{res[9]["last_time_access_percentage"]}},'purple']
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 411, in getitem
+    return obj[argument]
+jinja2.exceptions.UndefinedError: list object has no element 9
+202.46.129.70 - - [17/May/2017 02:52:50] "GET /stats-now HTTP/1.1" 500 -
+INFO:werkzeug:202.46.129.70 - - [17/May/2017 02:52:50] "GET /stats-now HTTP/1.1" 500 -
+[2017-05-17 02:55:05,254] ERROR in app: Exception on /stats-now [GET]
+Traceback (most recent call last):
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1982, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1614, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1517, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 33, in reraise
+    raise value
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1612, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/app.py", line 1598, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "app/app.py", line 41, in stream_stats
+    return render_template('index.html',**locals())
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/templating.py", line 134, in render_template
+    context, ctx.app)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/flask/templating.py", line 116, in _render
+    rv = template.render(context)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/app/templates/index.html", line 8, in top-level template code
+    {% block body %}
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/app/templates/index.html", line 32, in block "body"
+    ['{{res[9]["container_name"]}}', {{res[9]["cpu"]}}, {{res[9]["memory_percentage"]}}, {{res[9]["last_time_access_percentage"]}},'purple']
+  File "/home/ardinusawan/Documents/TA/MCDM-AHP-Flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 411, in getitem
+    return obj[argument]
+jinja2.exceptions.UndefinedError: list object has no element 9
+202.46.129.77 - - [17/May/2017 02:55:05] "GET /stats-now HTTP/1.1" 500 -
+INFO:werkzeug:202.46.129.77 - - [17/May/2017 02:55:05] "GET /stats-now HTTP/1.1" 500 -
+202.46.129.70 - - [17/May/2017 02:56:43] "GET /stats-now HTTP/1.1" 200 -
+INFO:werkzeug:202.46.129.70 - - [17/May/2017 02:56:43] "GET /stats-now HTTP/1.1" 200 -

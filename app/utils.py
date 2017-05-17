@@ -185,6 +185,7 @@ def stats(**kwargs):
         if app.debug:
             kwargs["mode"] = "REPLACE"
         database.insert("result", **kwargs)
+	print("Get result on " + now)
         c_stop_hour= client.containers.get(score_hour["max"])
         c_stop_day = client.containers.get(score_day["max"])
         c_stop_week = client.containers.get(score_week["max"])
