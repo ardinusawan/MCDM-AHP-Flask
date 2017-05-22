@@ -108,6 +108,18 @@ def create_table():
         cursor.execute(result)
     # else:
     #     print("Table result is already, skip..")
+
+    server_stats = """
+            CREATE TABLE IF NOT EXISTS server_stats (
+                cpu FLOAT,
+                memory FLOAT ,
+                timestamps DATETIME PRIMARY KEY)
+            """
+    status = cursor.execute("SHOW TABLES LIKE 'server_stats'")
+    if status == 0:
+        cursor.execute(server_stats)
+    # else:
+    #     print("Table result is already, skip..")
     cursor.close()
 
 

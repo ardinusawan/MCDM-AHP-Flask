@@ -1,5 +1,7 @@
 import docker
 import logging
+
+import psutil
 import pytz
 import datetime
 from flask import Flask
@@ -119,18 +121,30 @@ def get_CPU_Percentage(con):
 
     return (cpupercentage * 100)
 
+def get_server_data(now):
+    cpu = psutil.cpu_percent(interval=1, percpu=True)
+    cpu = sum(cpu)/len(cpu)
+    memory = psutil.virtual_memory().used / (1024^2) #MegaByte
+    data = dict()
+    data["params"] = "CPU, Memory, timestamps"
+    data["value"] = "{CPU}, {Memory}, '{ts}'".format(CPU=cpu,Memory=memory,ts=now)
+    database.insert("server_stats", **data)
+
 
 def stats(**kwargs):
+
     if "stream" in kwargs.keys():
         stream = []
     elif not "stream" in kwargs.keys():
         database.create_table()
 
+    now = datetime.datetime.now()
+    get_server_data(now)
+
     list = client.containers.list()
     if not list:
         return "No container up"
 
-    now = datetime.datetime.now()
     containers = 0
 
     for c in list:
@@ -143,14 +157,14 @@ def stats(**kwargs):
             LTA_percentage, LTA_datetime = get_LTA_Data(con)
             if "stream" in kwargs.keys():
                 stream.append({"container_id":c.short_id,"container_name":c.name, "cpu":cpu_percentage,
-                           "memory":memory_mb, "memory_percentage":memory_percentage,
-                           "last_time_access":LTA_datetime,"last_time_access_percentage":LTA_percentage})
+                               "memory":memory_mb, "memory_percentage":memory_percentage,
+                               "last_time_access":LTA_datetime,"last_time_access_percentage":LTA_percentage})
             else:
                 if app.debug:
                     kwargs["mode"] = "REPLACE"
                 kwargs["params"] = "container_id, name, status, timestamps"
                 kwargs["value"] = "'{short_id}', '{name}', '{status}', '{timestamps}'".format(short_id=con.short_id, name=con.name,
-                                                                                     status=con.status, timestamps=now)
+                                                                                              status=con.status, timestamps=now)
                 status = database.insert("containers",**kwargs)
                 if status:
                     # kwargs.clear()
@@ -179,9 +193,9 @@ def stats(**kwargs):
         score_day = ahp.score(**day)
         score_week = ahp.score(**week)
         kwargs["value"] = "'{max_hour}', '{max_day}', '{max_week}', '{score_hour}', '{score_days}', '{score_weeks}', '{hour_from}', '{day_from}', '{week_from}', '{timestamps}'".format(max_hour=score_hour["max"],
-                                                                      max_day=score_day["max"], max_week=score_week["max"],
-                                                                      score_hour=score_hour["result"][score_hour["max"]], score_days=score_day["result"][score_day["max"]], score_weeks=score_week["result"][score_week["max"]],
-                                                                      hour_from=hour["hour_from"], day_from=day["day_from"], week_from=week["week_from"], timestamps=score_hour["ts"])
+                                                                                                                                                                                        max_day=score_day["max"], max_week=score_week["max"],
+                                                                                                                                                                                        score_hour=score_hour["result"][score_hour["max"]], score_days=score_day["result"][score_day["max"]], score_weeks=score_week["result"][score_week["max"]],
+                                                                                                                                                                                        hour_from=hour["hour_from"], day_from=day["day_from"], week_from=week["week_from"], timestamps=score_hour["ts"])
 
         if app.debug:
             kwargs["mode"] = "REPLACE"
