@@ -1,0 +1,11 @@
+username,firstname,lastname,email,city,password,course1,role1
+user1,user,1,user1@user.com,Surabaya,User1.moodle,Grafkom,
+user2,user,2,user2@user.com,Surabaya,User2.moodle,Grafkom,
+user3,user,3,user3@user.com,Surabaya,User3.moodle,Grafkom,
+user4,user,4,user4@user.com,Surabaya,User4.moodle,Grafkom,
+user5,user,5,user5@user.com,Surabaya,User5.moodle,Grafkom,
+user6,user,6,user6@user.com,Surabaya,User6.moodle,Grafkom,
+user7,user,7,user7@user.com,Surabaya,User7.moodle,Grafkom,
+user8,user,8,user8@user.com,Surabaya,User8.moodle,Grafkom,
+user9,user,9,user9@user.com,Surabaya,User9.moodle,Grafkom,
+user10,user,10,user10@gmail.com,Surabaya,User10.moodle,Grafkom,
