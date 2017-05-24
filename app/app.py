@@ -24,7 +24,11 @@ def hello():
 def moodle(moodle_id):
     moodle = 'moodle' + moodle_id
     utils.unpause_docker(moodle)
-    url = "http://localhost:1000" + moodle_id
+    if moodle_id == "10":
+        moodle_id = str(10010)
+    else:
+        moodle_id = str(1000) + moodle_id
+    url = "http://ardinusawan4772.cloudapp.net:" + moodle_id
     return redirect(url, code=302)
 
 @application.route("/container/list")
