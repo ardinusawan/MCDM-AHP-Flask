@@ -31,7 +31,7 @@ def moodle(moodle_id):
     url = "http://ardinusawan4772.cloudapp.net:" + moodle_id
     return redirect(url, code=302)
 
-@application.route("/container/list")
+@application.route("/compute")
 def container_list():
     res = utils.stats()
     return jsonify(res)
@@ -44,18 +44,8 @@ def stream_stats():
     # return jsonify({"message":"success", "containers":res})
     return render_template('index.html',**locals())
 
-@application.route("/stats-log", methods=['GET', 'POST'])
-def stats_log():
-    table_name = "stats"
-    if request.method == 'GET':
-        res = utils.log(table_name)
-        return jsonify(res)
-    if request.method == 'POST':
-        limit = True
-        res = utils.log(table_name, limit, request.form["from"], request.form["to"])
-        return jsonify(res)
 
-@application.route("/result-log", methods=['GET', 'POST'])
+@application.route("/result", methods=['GET', 'POST'])
 def result_log():
     table_name = "result"
     if request.method == 'GET':
@@ -65,6 +55,29 @@ def result_log():
         limit = True
         res = utils.log(table_name, limit, request.form["from"], request.form["to"])
         return jsonify(res)
+
+@application.route("/stats", methods=['GET', 'POST'])
+def stats():
+    table_name = "stats"
+    if request.method == 'GET':
+        res = utils.log(table_name)
+        return jsonify(res)
+    if request.method == 'POST':
+        limit = True
+        res = utils.log(table_name, limit, request.form["from"], request.form["to"])
+        return jsonify(res)
+
+@application.route("/server-stats", methods=['GET', 'POST'])
+def server_stats():
+    table_name = "server_stats"
+    if request.method == 'GET':
+        res = utils.log(table_name)
+        return jsonify(res)
+    if request.method == 'POST':
+        limit = True
+        res = utils.log(table_name, limit, request.form["from"], request.form["to"])
+        return jsonify(res)
+
 
 @application.route("/database/create")
 def create_database():
