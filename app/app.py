@@ -9,11 +9,13 @@ from flask import request
 import db as database
 import ahp as ahp
 import os
+from flask_cors import CORS, cross_origin
+
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 application = Flask(__name__, template_folder=tmpl_dir)
-
+CORS(application)
 get_stats = database.interval()
 
 @application.route("/")
