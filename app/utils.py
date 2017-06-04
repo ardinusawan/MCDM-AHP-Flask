@@ -283,10 +283,10 @@ def log(table_name, limit=False, *args):
 
 def unpause_docker(id_or_name):
     con = client.containers.get(id_or_name)
-    if con.status != 'running':
+    if con.status == 'paused':
         con.unpause()
 
 def start_docker(id_or_name):
     con = client.containers.get(id_or_name)
-    if con.status != 'running':
+    if con.status == 'exited':
         con.start()
