@@ -295,13 +295,15 @@ def log(table_name, limit=False, *args):
 
 def unpause_docker(id_or_name):
     con = client.containers.get(id_or_name)
-    maridb = client.containers.get("mariadb" + con.name.strip()[-1])
+    number = [int(s) for s in con.name.split() if s.isdigit()]
+    maridb = client.containers.get("mariadb" + number)
     if con.status == 'paused':
         con.unpause()
         maridb.unpause()
 def start_docker(id_or_name):
     con = client.containers.get(id_or_name)
-    maridb = client.containers.get("mariadb" + con.name.strip()[-1])
+    number = [int(s) for s in con.name.split() if s.isdigit()]
+    maridb = client.containers.get("mariadb" + number)
     if con.status == 'exited':
         con.start()
         maridb.start()
