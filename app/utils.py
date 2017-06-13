@@ -7,6 +7,7 @@ import datetime
 from flask import Flask
 import ahp as ahp
 import db as database
+import re
 
 app = Flask(__name__)
 
@@ -295,14 +296,14 @@ def log(table_name, limit=False, *args):
 
 def unpause_docker(id_or_name):
     con = client.containers.get(id_or_name)
-    number = [int(s) for s in con.name.split() if s.isdigit()]
+    number = int(re.search(r'\d+', con.name).group())
     maridb = client.containers.get("mariadb" + number)
     if con.status == 'paused':
         con.unpause()
         maridb.unpause()
 def start_docker(id_or_name):
     con = client.containers.get(id_or_name)
-    number = [int(s) for s in con.name.split() if s.isdigit()]
+    number = int(re.search(r'\d+', con.name).group())
     maridb = client.containers.get("mariadb" + number)
     if con.status == 'exited':
         con.start()
