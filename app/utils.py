@@ -205,6 +205,12 @@ def stats(**kwargs):
         c_stop_day = client.containers.get(score_day["max"])
         c_stop_week = client.containers.get(score_week["max"])
 
+        mysql_stop_hour = client.containers.get("mariadb" + c_stop_hour.name.strip()[-1])
+        mysql_stop_day = client.containers.get("mariadb" + c_stop_day.name.strip()[-1])
+        mysql_stop_week = client.containers.get("mariadb" + c_stop_week.name.strip()[-1])
+
+
+
         temp = dict()
         temp["config"] = True
         todo = database.select("prefered", **temp)
@@ -212,22 +218,28 @@ def stats(**kwargs):
             if todo["do"].lower() == "pause":
                 if todo["by"] == "hour":
                     c_stop_hour.pause()
+                    mysql_stop_hour.pause()
                     score_hour["message"] = "container {name} has been paused".format(name=c_stop_hour.name)
                 elif todo["by"] == "day":
                     c_stop_day.pause()
+                    mysql_stop_day.pause()
                     score_day["message"] = "container {name} has been paused".format(name=c_stop_day.name)
                 elif todo["by"] == "week":
                     c_stop_week.pause()
+                    mysql_stop_week.pause()
                     score_week["message"] = "container {name} has been paused".format(name=c_stop_week.name)
             elif todo["do"].lower() == "stop":
                 if todo["by"] == "hour":
                     c_stop_hour.stop()
+                    mysql_stop_hour.stop()
                     score_hour["message"] = "container {name} has been stoped".format(name=c_stop_hour.name)
                 elif todo["by"] == "day":
                     c_stop_day.stop()
+                    mysql_stop_day.stop()
                     score_day["message"] = "container {name} has been stoped".format(name=c_stop_day.name)
                 elif todo["by"] == "week":
                     c_stop_week.stop()
+                    mysql_stop_week.stop()
                     score_week["message"] = "container {name} has been stoped".format(name=c_stop_week.name)
         # database.close()
         return {"hour":score_hour, "day":score_day, "week":score_week}
@@ -283,10 +295,13 @@ def log(table_name, limit=False, *args):
 
 def unpause_docker(id_or_name):
     con = client.containers.get(id_or_name)
+    maridb = client.containers.get("mariadb" + con.name.strip()[-1])
     if con.status == 'paused':
         con.unpause()
-
+        maridb.unpause()
 def start_docker(id_or_name):
     con = client.containers.get(id_or_name)
+    maridb = client.containers.get("mariadb" + con.name.strip()[-1])
     if con.status == 'exited':
         con.start()
+        maridb.start()
