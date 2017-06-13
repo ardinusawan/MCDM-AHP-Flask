@@ -296,14 +296,14 @@ def log(table_name, limit=False, *args):
 
 def unpause_docker(id_or_name):
     con = client.containers.get(id_or_name)
-    number = int(re.search(r'\d+', con.name).group())
+    number = re.search(r'\d+', con.name).group()
     maridb = client.containers.get("mariadb" + number)
     if con.status == 'paused':
         con.unpause()
         maridb.unpause()
 def start_docker(id_or_name):
     con = client.containers.get(id_or_name)
-    number = int(re.search(r'\d+', con.name).group())
+    number = re.search(r'\d+', con.name).group()
     maridb = client.containers.get("mariadb" + number)
     if con.status == 'exited':
         con.start()
