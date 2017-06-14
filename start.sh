@@ -6,7 +6,7 @@ source $PWD/venv/bin/activate
 #     do 
 #         echo crap; 
 #     done )
-( cmdpid=$BASHPID; (sleep 21600; kill $cmdpid) & exec python3 -u $PWD/app/app.py )
+( cmdpid=$BASHPID; (sleep 7260; kill $cmdpid) & exec python3 -u $PWD/app/app.py )
 #python3 -u $PWD/app/app.py& PID=$!; sleep 3600; kill $PID
 #cd app
 #uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi

@@ -35,8 +35,8 @@ def moodle(moodle_id):
         moodle_id = str(10010)
     else:
         moodle_id = str(1000) + moodle_id
-    url = "http://localhost:" + moodle_id
 
+    url = "http://10.151.34.236:" + moodle_id
     while (requests.head(url).status_code!=200):
         time.sleep(1)
 
