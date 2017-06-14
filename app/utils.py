@@ -210,39 +210,47 @@ def stats(**kwargs):
         mysql_stop_day = client.containers.get("mariadb" + c_stop_day.name.strip()[-1])
         mysql_stop_week = client.containers.get("mariadb" + c_stop_week.name.strip()[-1])
 
+        cpu = psutil.cpu_percent(interval=1, percpu=True)
+        cpu = sum(cpu) / len(cpu)
+        memory = psutil.virtual_memory().used / (1024 ^ 2)
+        memory_total = psutil.virtual_memory().total / (1024 ^ 2)
 
+        limit = False
+        if((memory/memory_total)*100 > 60):
+            limit = True
 
         temp = dict()
         temp["config"] = True
         todo = database.select("prefered", **temp)
-        if todo["do"].lower() != "running":
-            if todo["do"].lower() == "pause":
-                if todo["by"] == "hour":
-                    c_stop_hour.pause()
-                    mysql_stop_hour.pause()
-                    score_hour["message"] = "container {name} has been paused".format(name=c_stop_hour.name)
-                elif todo["by"] == "day":
-                    c_stop_day.pause()
-                    mysql_stop_day.pause()
-                    score_day["message"] = "container {name} has been paused".format(name=c_stop_day.name)
-                elif todo["by"] == "week":
-                    c_stop_week.pause()
-                    mysql_stop_week.pause()
-                    score_week["message"] = "container {name} has been paused".format(name=c_stop_week.name)
-            elif todo["do"].lower() == "stop":
-                if todo["by"] == "hour":
-                    c_stop_hour.stop()
-                    mysql_stop_hour.stop()
-                    score_hour["message"] = "container {name} has been stoped".format(name=c_stop_hour.name)
-                elif todo["by"] == "day":
-                    c_stop_day.stop()
-                    mysql_stop_day.stop()
-                    score_day["message"] = "container {name} has been stoped".format(name=c_stop_day.name)
-                elif todo["by"] == "week":
-                    c_stop_week.stop()
-                    mysql_stop_week.stop()
-                    score_week["message"] = "container {name} has been stoped".format(name=c_stop_week.name)
-        # database.close()
+        if limit:
+            if todo["do"].lower() != "running":
+                if todo["do"].lower() == "pause":
+                    if todo["by"] == "hour":
+                        c_stop_hour.pause()
+                        mysql_stop_hour.pause()
+                        score_hour["message"] = "container {name} has been paused".format(name=c_stop_hour.name)
+                    elif todo["by"] == "day":
+                        c_stop_day.pause()
+                        mysql_stop_day.pause()
+                        score_day["message"] = "container {name} has been paused".format(name=c_stop_day.name)
+                    elif todo["by"] == "week":
+                        c_stop_week.pause()
+                        mysql_stop_week.pause()
+                        score_week["message"] = "container {name} has been paused".format(name=c_stop_week.name)
+                elif todo["do"].lower() == "stop":
+                    if todo["by"] == "hour":
+                        c_stop_hour.stop()
+                        mysql_stop_hour.stop()
+                        score_hour["message"] = "container {name} has been stoped".format(name=c_stop_hour.name)
+                    elif todo["by"] == "day":
+                        c_stop_day.stop()
+                        mysql_stop_day.stop()
+                        score_day["message"] = "container {name} has been stoped".format(name=c_stop_day.name)
+                    elif todo["by"] == "week":
+                        c_stop_week.stop()
+                        mysql_stop_week.stop()
+                        score_week["message"] = "container {name} has been stoped".format(name=c_stop_week.name)
+            # database.close()
         return {"hour":score_hour, "day":score_day, "week":score_week}
     else:
         return {"status":"error","error":ahp.score()["message"]}

@@ -9,6 +9,8 @@ from flask import request
 import db as database
 import ahp as ahp
 import os
+import time
+import requests
 from flask_cors import CORS, cross_origin
 
 
@@ -22,15 +24,22 @@ get_stats = database.interval()
 def hello():
     return "Hello World!"
 
+def check(url):
+    return requests.head(url)
+
 @application.route("/moodle/<moodle_id>")
 def moodle(moodle_id):
     moodle = 'moodle' + moodle_id
-    utils.unpause_docker(moodle)
+    utils.start_docker(moodle)
     if moodle_id == "10":
         moodle_id = str(10010)
     else:
         moodle_id = str(1000) + moodle_id
+
     url = "http://10.151.34.236:" + moodle_id
+    while (requests.head(url).status_code!=200):
+        time.sleep(1)
+
     return redirect(url, code=302)
 
 @application.route("/compute")
