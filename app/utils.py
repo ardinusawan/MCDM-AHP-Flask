@@ -215,9 +215,10 @@ def stats(**kwargs):
         memory = psutil.virtual_memory().used / (1024 ^ 2)
         memory_total = psutil.virtual_memory().total / (1024 ^ 2)
 
-        limit = False
-        if((memory/memory_total)*100 > 60):
-            limit = True
+        # limit = False
+        # if((memory/memory_total)*100 > 60):
+        #     limit = True
+        limit = True
 
         temp = dict()
         temp["config"] = True
