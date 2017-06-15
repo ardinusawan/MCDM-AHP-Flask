@@ -202,13 +202,13 @@ def stats(**kwargs):
             kwargs["mode"] = "REPLACE"
         database.insert("result", **kwargs)
         print("Get result on " + now.strftime("%Y-%m-%d %H:%M"))
-        c_stop_hour= client.containers.get(score_hour["max"])
+        c_stop_hour = client.containers.get(score_hour["max"])
         c_stop_day = client.containers.get(score_day["max"])
         c_stop_week = client.containers.get(score_week["max"])
 
-        mysql_stop_hour = client.containers.get("mariadb" + c_stop_hour.name.strip()[-1])
-        mysql_stop_day = client.containers.get("mariadb" + c_stop_day.name.strip()[-1])
-        mysql_stop_week = client.containers.get("mariadb" + c_stop_week.name.strip()[-1])
+        mysql_stop_hour = client.containers.get("mariadb" + re.search(r'\d+', c_stop_hour.name).group())
+        mysql_stop_day = client.containers.get("mariadb" + re.search(r'\d+', c_stop_day.name).group())
+        mysql_stop_week = client.containers.get("mariadb" + re.search(r'\d+', c_stop_week.name).group())
 
         cpu = psutil.cpu_percent(interval=1, percpu=True)
         cpu = sum(cpu) / len(cpu)
