@@ -94,12 +94,12 @@ def rating_each_node(column_name, *args, **kwargs):
         return False, {"message": "no stats"}
     data_min = min(data, key=lambda key: key[1])
     data_max = max(data, key=lambda key: key[1])
-    data_range = list(np.arange(data_min[1], data_max[1], (data_max[1] - data_min[1]) / 9))
-    # if not data_min and not data_max:
-    #     data_range = list(np.arange(data_min[1], data_max[1], (data_max[1] - data_min[1]) / 9))
-    # else:
-    #     data_range = [0]
-    # return data_range
+    # print((data_max[1] - data_min[1]))
+    # data_range = list(np.arange(data_min[1], data_max[1], (data_max[1] - data_min[1]) / 9))
+    if not data_min[1]==0.0 and not data_max[1]==0.0:
+       data_range = list(np.arange(data_min[1], data_max[1], (data_max[1] - data_min[1]) / 9))
+    else:
+       data_range = [0]
     # 2. untuk setiap data, cek data ada pada kolom mana, masukkan ke matrik
     c_name = [x[2] for x in container]
     index = c_name
@@ -170,14 +170,14 @@ def score(**kwargs):
         score_final = {"status": "success", "result": score_final, "max": str(score_max), "min": str(score_min), "ts": c_ts}
         return score_final
     else:
-        error = CPU[1]
+        error = CPU
         return {"status": "error", "message": error}
 
 
 # print("weight_of_criteria:\n",weight_of_criteria(),"\n")
 # print("cpu:\n", rating_each_node("cpu")[1],"\n")
-# print("memory:\n", rating_each_node("memory"),"\n")
-# print("lta:\n", rating_each_node("last_time_access_percentage"),"\n")
+# print("memory:\n", rating_each_node("memory")[1],"\n")
+# print("lta:\n", rating_each_node("last_time_access_percentage")[1],"\n")
 # print("score:\n",score())
 
 # data = dict()
